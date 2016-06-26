@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="prashushi.farcon.WelcomeActivity"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/referal2"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Verify"
+            android:id="@+id/bt_verify"
+            android:textColor="@color/colorPrimary"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="100dp"
+            android:textSize="20dp"
+            android:layout_centerHorizontal="true"
+            android:textStyle="bold"
+            android:background="@drawable/box_green"
+            style="@style/MyButton"
+            />
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/input_layout_otp"
+            android:layout_above="@id/bt_verify"
+            android:layout_margin="10dp"
+
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Referral Code"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:id="@+id/et_referral"/>
+        </android.support.design.widget.TextInputLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/referral_msg"
+            android:layout_above="@id/input_layout_otp"
+            android:layout_centerHorizontal="true"
+            android:textColor="#FE0000"
+            android:id="@+id/tv_msg"
+            />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Skip"
+            android:id="@+id/tv_skip"
+            android:textColor="@color/white"
+            android:layout_alignParentBottom="true"
+            android:textSize="20dp"
+            android:layout_centerHorizontal="true"
+            android:textStyle="bold"
+            android:background="@color/colorPrimary"
+            style="@style/MyButton"
+            />
+
+    </RelativeLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

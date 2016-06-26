@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">FarCon</string>
+    <string name="action_settings">Settings</string>
+    <string name="phone_no">Phone Number</string>
+    <string name="next">Next</string>
+    <string name="otp">Enter OTP</string>
+    <string name="receiving_otp">We have sent you an OTP. If not?  </string>
+    <string name="resend">Resend</string>
+    <string name="referral">Referral Code</string>
+    <string name="verify">Verify</string>
+    <string name="referral_msg">Get and gift rewards by sharing.</string>
+    <string name="skip"><![CDATA[Skip>>]]></string>
+    <string name="title_activity_activity_home">Home</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="tagline">Direct From Farmers</string>
+    <string name="action_cart">Cart</string>
+    <string name="item_name">Item Name</string>
+    <string name="item_price">Price</string>
+    <string name="add">Add</string>
+    <string name="cart_summary">2 Items \nRs.120.00</string>
+    <string name="buy">Buy>></string>
+    <string name="cost">Rs. 120.00</string>
+    <string name="shipping">Shipping Address</string>
+    <string name="confirm_order">Your Order Have Been Received.\nThank You For Shopping With Us!</string>
+    <string name="S_PREFS">FarConPrefFile</string>
+    <string name="deopa">http://192.168.0.19/FarCon/public/</string>
+    <string name="local_host">http://api.farcon.in/</string>
+    <string name="local_host_web">http://admin.farcon.in</string>
+    <string name="server">http://api.farcon.in/</string>
+    <string name="try_again">Something went wrong, try again!</string>
+    <string name="get_items">item</string>
+    <string name="add_cart">addcart/</string>
+    <string name="success_feed">Thank you for your valuable feedback!</string>
+    <string name="share_msg">http://www.farcon.in/download/FarCon.apk Click this link, use my FarCon invite code and get surprise gift on your first order. My Referral Code:</string>
+    <string name="share_through">Share the link using?</string>
+    <string name="left_empty">Can\'t be left empty!</string>
+    <string name="rewarded">You and your friend have got surprise in your basket!</string>
+    <string name="quote_rec">Your request have been received. We will contact you soon.</string>
+    <string name="re_enter">Re Enter</string>
+    <string name="re_enter_num">Re-enter your number?</string>
+</resources>

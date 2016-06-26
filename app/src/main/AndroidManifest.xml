@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="prashushi.farcon">
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/icon_big"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/MyMaterialTheme">
+        <receiver android:name=".IncomingSms"
+            android:enabled="true"
+            >
+            <intent-filter android:priority="2147483647">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".SmsReceiver"
+            android:enabled="true"
+            >
+            <intent-filter android:priority="99999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+            </intent-filter>
+        </receiver>
+        <activity
+            android:name=".WelcomeActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ConfirmActivity"
+            android:parentActivityName=".HomeActivity"/>
+        <activity android:name=".OTPActivity" />
+        <activity
+            android:name=".HomeActivity"
+            android:label="@string/title_activity_activity_home"
+            android:theme="@style/MyMaterialTheme" />
+        <activity
+            android:name=".CartActivity"
+            android:label="@string/action_cart"
+            android:parentActivityName=".HomeActivity" />
+        <activity android:name=".AddressActivity"
+            android:parentActivityName=".CartActivity" />
+        <activity android:name=".ReferralActivity"
+            android:parentActivityName=".HomeActivity"/>
+         <activity android:name=".FeedbackActivity"/>
+        <activity android:name=".ItemActivity"/>
+        <activity android:name=".QuoteFormActivity"/>
+    </application>
+
+</manifest>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="prashushi.farcon.WelcomeActivity"
+    >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Verify"
+            android:id="@+id/tv_verify"
+            android:textColor="@color/white"
+            android:layout_alignParentBottom="true"
+            android:textSize="20dp"
+            android:layout_centerHorizontal="true"
+            android:textStyle="bold"
+            android:background="@color/colorPrimary"
+            style="@style/MyButton"
+            />
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/input_layout_otp"
+            android:layout_above="@id/tv_verify"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="30dp"
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter OTP"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:inputType="number"
+                android:id="@+id/et_otp"
+                android:textSize="20dp"
+                android:textColorHint="#FE0000"
+                />
+        </android.support.design.widget.TextInputLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:layout_above="@id/input_layout_otp"
+            android:id="@+id/tv_container">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/receiving_otp"
+                android:textColor="#FE0000"
+                android:id="@+id/tv_msg"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/resend"
+                android:layout_marginLeft="5dp"
+                android:textStyle="bold"
+                android:textColor="#FE0000"
+                android:id="@+id/tv_resend"
+                />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:layout_above="@id/input_layout_otp"
+            android:id="@+id/tv_container2">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/re_enter_num"
+                android:layout_marginLeft="5dp"
+                android:textStyle="bold"
+                android:textColor="#FE0000"
+                android:id="@+id/tv_num_enter"
+                />
+
+        </LinearLayout>
+        <ImageView
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:src="@drawable/otp"
+            android:layout_above="@+id/tv_container2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:id="@+id/imageView2" />
+
+    </RelativeLayout>
+
+    </ScrollView>
+</android.support.design.widget.CoordinatorLayout>

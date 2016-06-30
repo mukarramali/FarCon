@@ -27,7 +27,7 @@
     <string name="S_PREFS">FarConPrefFile</string>
 
     <string name="deopa">http://192.168.0.19/FarCon/public/</string>
-    <string name="local_host">http://api.farcon.in/</string>
+    <string name="local_host">http://192.168.0.15/</string>
     <string name="local_host_web">http://admin.farcon.in</string>
     <string name="server">http://api.farcon.in/</string>
     <string name="server_web">http://admin.farcon.in</string>

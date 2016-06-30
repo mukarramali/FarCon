@@ -90,13 +90,17 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
 
             new GetAddress(this, longitude, latitude, new GetAddress.AsyncResponse() {
                 @Override
-                public void processFinish(Address address) {
+                public void processFinish(Address address, String result) {
                     if(address!=null)
                     {
-                        if(address.getMaxAddressLineIndex()>3)
-                            etStreet.setText(address.getAddressLine(0));
-                        if(address.getSubLocality()!=null)
-                            etArea.setText(address.getSubLocality());
+                        if(address.getSubLocality()!=null){
+                            String area=address.getSubLocality();
+                            etArea.setText(area);
+                            int pos=result.indexOf(area);
+                            String street=result.substring(0,pos-1);
+                            etStreet.setText(street);
+
+                        }
                         if(address.getLocality()!=null)
                             etCity.setText(address.getLocality());
                         if(address.getPostalCode()!=null)
@@ -241,6 +245,7 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
 
             case R.id.bt_loc:
 
+                displayLocation();
                 break;
             case R.id.tv_order:
 
@@ -361,7 +366,7 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void processFinish(String output) {
                         if(output.contains("truexxx")) {
-                           String url2=getString(R.string.local_host)+"checkout/";
+                           String url2=getString(R.string.local_host)+"checkout";
                             ArrayList<String> params=new ArrayList<>();
                             ArrayList<String> values=new ArrayList<>();
 
@@ -370,6 +375,7 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
                             values.add(id);
                             params.add("access_token");
                             values.add(sPref.getString("access_token", "0"));
+
 
                             new BackgroundTaskPost(url2, params, values, new BackgroundTaskPost.AsyncResponse() {
                                 @Override

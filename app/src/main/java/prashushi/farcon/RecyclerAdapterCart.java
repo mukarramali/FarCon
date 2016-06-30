@@ -41,11 +41,12 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
     int _i;
    TextView cart_summary_actual;
     TextView  cart_summary_final;
+    TextView tv_cart_discount;
     TextView _tvQ, _tvT1, _tvT2;
     RelativeLayout summary_container;
     int min_amount, discount_off;
 
-    public RecyclerAdapterCart(Context context, int min_amount, int discount_off,JSONArray items, TextView tv, TextView tv2, RelativeLayout rl) {
+    public RecyclerAdapterCart(Context context, int min_amount, int discount_off,JSONArray items, TextView tv, TextView tv2, TextView tv3,RelativeLayout rl) {
         mContext = context;
         this.items=items;
         this.min_amount=min_amount;
@@ -55,6 +56,7 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
         mydb = new DBHelper(context);
         cart_summary_actual=tv;
         cart_summary_final=tv2;
+        tv_cart_discount=tv3;
         summary_container=rl;
         updateList(items);
     }
@@ -257,10 +259,14 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
 
         double costnew=_cost-_off;
         double costfinal;
-        if((int)costnew>min_amount)
-            costfinal=((100-discount_off)*costnew)/100;
-        else
-            costfinal=costnew;
+        if((int)costnew>min_amount&&discount_off>0) {
+            costfinal = ((100 - discount_off) * costnew) / 100;
+            tv_cart_discount.setText(discount_off+"% Discount");
+        }
+        else {
+            costfinal = costnew;
+            tv_cart_discount.setText("");
+        }
 
         if(j>0)
         {
@@ -355,7 +361,7 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
         int min=Integer.parseInt(min_qty.get(i));
         tv1.setText( "Rs. "+String.format("%.1f",(qty)*Double.valueOf(item_cost.get(i)))) ;
         if(per>0&&qty>=min) {
-            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "fonts/italics.ttf");
+            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "fonts/italicslined.ttf");
             tv1.setTypeface(tf);
             tv2.setText("Rs. " + getCost(per, item_cost.get(i), qty));
         }

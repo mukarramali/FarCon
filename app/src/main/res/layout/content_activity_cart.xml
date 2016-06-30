@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="SubTotal"
-            android:id="@+id/tv_discount"
+            android:id="@+id/tv_total_actual"
             android:textColor="@color/white"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
@@ -80,11 +80,11 @@
             android:layout_height="wrap_content"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="Dicount"
+            android:text=""
             android:textSize="16dp"
             android:textColor="@color/white"
             android:layout_marginLeft="5dp"
-            android:id="@+id/tv_total_actual"
+            android:id="@+id/tv_discount"
             android:layout_weight="1"/>
         <View
             android:layout_width="1dp"

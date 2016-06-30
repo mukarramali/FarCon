@@ -2,6 +2,7 @@ package prashushi.farcon;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,6 +29,7 @@ public class CartActivity extends AppCompatActivity implements View.OnClickListe
     RecyclerView recyclerview_cart;
     TextView  actualsummaryTv; //for actual cost
     TextView finalsummaryTv2 ;
+    TextView discountTv;
     TextView tvBuy;
     DBHelper mydb;
     SharedPreferences sPrefs;
@@ -48,7 +50,7 @@ public class CartActivity extends AppCompatActivity implements View.OnClickListe
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         actualsummaryTv= (TextView) findViewById(R.id.tv_total_actual);
         finalsummaryTv2= (TextView) findViewById(R.id.tv_cart_summary2);
-
+        discountTv= (TextView) findViewById(R.id.tv_discount);
         recyclerview_cart= (RecyclerView) findViewById(R.id.recycler_cart);
         mLayoutManager = new LinearLayoutManager(this);
         recyclerview_cart.setLayoutManager(mLayoutManager);
@@ -100,16 +102,17 @@ public class CartActivity extends AppCompatActivity implements View.OnClickListe
                     JSONObject jsonDiscount=null;
                     try {
 
-                        jsonObject=new JSONObject(output);
+                        JSONArray temp=new JSONArray(output);
+                        jsonObject=temp.getJSONObject(0);
                         jsonArray=jsonObject.optJSONArray("details");
-                        JSONArray temp=jsonObject.optJSONArray("details");
+                        temp=jsonObject.optJSONArray("details");
                         jsonDiscount=temp.getJSONObject(0);
-                        int min_amount=jsonObject.optInt("min_amount");
-                        int percent_off=jsonObject.optInt("percent_off");
+                        int min_amount=jsonDiscount.optInt("min_amt");
+                        int percent_off=jsonDiscount.optInt("percent_off");
 
                         cartString=jsonArray.toString();
                         System.out.println("Cart from Server:"+cartString);
-                        final RecyclerAdapterCart adapter=new RecyclerAdapterCart(CartActivity.this,min_amount, percent_off, jsonArray, actualsummaryTv, finalsummaryTv2, summary_container);
+                        final RecyclerAdapterCart adapter=new RecyclerAdapterCart(CartActivity.this,min_amount, percent_off, jsonArray, actualsummaryTv, finalsummaryTv2, discountTv,summary_container);
                         recyclerview_cart.setAdapter(adapter);
                         JSONObject obj;
                         double cost=0, costnew=0;
@@ -124,8 +127,13 @@ public class CartActivity extends AppCompatActivity implements View.OnClickListe
                         count=j;
                         String st="";
                         String st2="";
-                        if((int)cost>min_amount)
-                            costnew=((100-percent_off)*cost)/100;
+                        if((int)cost>min_amount&&percent_off>0)
+                        {costnew=((100-percent_off)*cost)/100;
+                         String st3=percent_off+"% Discount";
+                        discountTv.setText(st3);
+//                            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "fonts/italicslined.ttf");
+
+                        }
                         else
                         costnew=cost;
 
@@ -174,7 +182,7 @@ public class CartActivity extends AppCompatActivity implements View.OnClickListe
                     return;
                 }
                 String user_id=sPrefs.getString("id", "0");
-                String url=getString(R.string.local_host)+"promocode";
+                String url=getString(R.string.local_host)+"promo";
                 //now call a function, get a value of promo code
                 ArrayList<String> params=new ArrayList<>();
                 ArrayList<String> values=new ArrayList<>();
@@ -183,20 +191,42 @@ public class CartActivity extends AppCompatActivity implements View.OnClickListe
                 values.add(user_id);
                 params.add("access_token");
                 values.add(sPrefs.getString("access_token", "0"));
-                params.add("promo");
+                params.add("code");
                 values.add(promo_code);
 
 
                 new BackgroundTaskPost(url, params, values, new BackgroundTaskPost.AsyncResponse() {
                     @Override
                     public void processFinish(String output) {
-                        if(output.contains("false"))
+                        if(output.contains("falsexxx")) {
                             new Utilities().checkIfLogged(output, CartActivity.this);
-                        else{
-                            String details="";//get what promo doing
-                            Intent intent=new Intent(CartActivity.this, TempCartActivity.class);
-                            intent.putExtra("promo_benefit", details);
-                            startActivity(new Intent(intent));
+                            return;
+                        }
+                        else {
+                            JSONArray jsonArray = null;
+                            JSONObject jsonObject = null;
+                            JSONObject jsonCost = null;
+                            try {
+
+                                JSONArray temp = new JSONArray(output);
+                                jsonObject = temp.getJSONObject(0);
+                                jsonArray = jsonObject.optJSONArray("details");
+                                jsonCost=temp.getJSONObject(1);
+//                                double[] arr=(double[])jsonCost.opt("discount");
+                                JSONArray arr=jsonCost.getJSONArray("discount");
+                                if(arr.length()>2)
+                                {
+                                    System.out.println("Actual:"+arr.optDouble(0));
+                                    System.out.println("Discounted:"+arr.optDouble(2));
+                                    System.out.println("After Promo:"+arr.optDouble(1));
+
+                                }
+                                //[{"details":[{"item_id":1,"flags":0,"item_qty":2,"name":"gtf","offer_cost":0,"promo_qty":2},
+                                // {"item_id":1,"flags":0,"item_qty":1,"name":"gtf","offer_cost":8698,"promo_qty":1}]},
+                                // {"discount":[8698,7045.38,7828.2]}]
+                            }catch (JSONException j){
+                                j.printStackTrace();
+                            }
                         }
                     }
 

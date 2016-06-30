@@ -1,5 +1,7 @@
 package prashushi.farcon;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -15,6 +17,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -28,8 +31,8 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
     SharedPreferences.Editor editor;
     EditText et;
     String number = "";
-    IncomingSms broadcast_receiver;
-
+    Button bt_verify;
+    //IncomingSms broadcast_receiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,14 +42,29 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         sPrefs = getSharedPreferences(getString(R.string.S_PREFS), MODE_PRIVATE);
         editor = sPrefs.edit();
         et = (EditText) findViewById(R.id.et_otp);
-        findViewById(R.id.tv_verify).setOnClickListener(this);
+        bt_verify= (Button) findViewById(R.id.tv_verify);
+        bt_verify.setOnClickListener(this);
         findViewById(R.id.tv_resend).setOnClickListener(this);
         findViewById(R.id.tv_num_enter).setOnClickListener(this);
-    /*    broadcast_receiver = new IncomingSms();
-        IntentFilter filter1 = new IntentFilter();
-        filter1.addAction("android.provider.Telephony.SMS_RECEIVED");
-        registerReceiver(broadcast_receiver, filter1);
-    */}
+        //IntentFilter filter1 = new IntentFilter();
+        //filter1.addAction("android.provider.Telephony.SMS_RECEIVED");
+        registerReceiver(broadcastReceiver, new IntentFilter("BroadcastOTP"));
+    }
+
+
+    BroadcastReceiver broadcastReceiver=new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                String code = intent.getExtras().getString("otp");
+                et.setText(code);
+                bt_verify.performClick();
+            }catch (Exception n){
+                n.printStackTrace();
+            }
+        }
+    };
+
 
 
     Boolean checkOTP(String otp) {
@@ -132,18 +150,47 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
 
                 if(!checkOTP(et.getText().toString()))
                     break;
-                Boolean isNew = sPrefs.getBoolean("status", false);
-                editor.putBoolean("logged", true);
-                editor.commit();
-                if (isNew) {
-                    startActivity(new Intent(OTPActivity.this, ReferralActivity.class));
-                    finish();
-                    System.out.println("***");
-                } else {
-                    startActivity(new Intent(OTPActivity.this, HomeActivity.class));
-                    System.out.println("###");
-                    finish();
-                }
+
+                String url=getString(R.string.local_host)+"oauth/access_token";
+                ArrayList<String> params=new ArrayList<>();
+                ArrayList<String> values=new ArrayList<>();
+
+                params.add("grant_type");
+                values.add("client_credentials");
+
+                params.add("client_id");
+                values.add("user_id");
+
+                params.add("client_secret");
+                values.add("user_password");
+
+                new BackgroundTaskPost(url, params, values, new BackgroundTaskPost.AsyncResponse() {
+                    @Override
+                    public void processFinish(String output) {
+                        if(!output.contains("falsexxx")) {
+
+                            JSONObject jsonObject= null;
+                            try {
+                                jsonObject = new JSONObject(output);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            String access_token=jsonObject.optString("access_token");
+                            Boolean isNew = sPrefs.getBoolean("status", false);
+                            editor.putString("access_token", access_token);
+                            editor.putBoolean("logged", true);
+                            editor.commit();
+                            if (isNew) {
+                                startActivity(new Intent(OTPActivity.this, ReferralActivity.class));
+                                finish();
+                            } else {
+                                startActivity(new Intent(OTPActivity.this, HomeActivity.class));
+                                finish();
+                            }
+                        }
+
+                    }
+                }).execute();
 
                 break;
             case R.id.tv_resend:

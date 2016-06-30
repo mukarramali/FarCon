@@ -5,7 +5,8 @@
         android:id="@+id/action_logout"
         android:orderInCategory="100"
         android:title="Logout"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        style="@style/MyMaterialTheme.OverflowMenu"/>
     <item
         android:id="@+id/action_cart"
         android:orderInCategory="100"
@@ -14,5 +15,11 @@
         android:icon="@drawable/cart_white"
         />
 
-
+<!--    <item
+        android:id="@+id/testAction"
+        android:orderInCategory="1"
+        android:title="@string/action_cart"
+        app:showAsAction="always"
+        />
+-->s
 </menu>

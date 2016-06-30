@@ -1,6 +1,8 @@
 package prashushi.farcon;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,6 +23,12 @@ public class FeedbackActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Feedback");
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         findViewById(R.id.tv_cancel).setOnClickListener(this);
         findViewById(R.id.tv_send).setOnClickListener(this);
 
@@ -58,8 +66,7 @@ public class FeedbackActivity extends AppCompatActivity implements View.OnClickL
                 EditText etName=(EditText)findViewById(R.id.et_name);
                 String name=etName.getText().toString();
                 if (name.length()==0){
-                    TextInputLayout til=(TextInputLayout)findViewById(R.id.input_layout_1);
-                    til.setError("Can't be empty!");
+                    etName.setError("Can't be empty!");
                 }
 
                 if(!format(name)){
@@ -73,22 +80,26 @@ public class FeedbackActivity extends AppCompatActivity implements View.OnClickL
                 EditText etMsg=(EditText)findViewById(R.id.et_msg);
                 String msg=etMsg.getText().toString();
                 if (msg.length()==0){
-                    TextInputLayout til=(TextInputLayout)findViewById(R.id.input_layout_3);
-                    til.setError("Can't be empty!");
+                    etEmail.setError("Can't be empty!");
                     break;
                 }
+                SharedPreferences sPrefs=getSharedPreferences(getString(R.string.S_PREFS), MODE_PRIVATE);
                 String url=getString(R.string.local_host)+"feed";
+
                 ArrayList<String> params=new ArrayList<>();
                 ArrayList<String> values=new ArrayList<>();
 
                 params.add("id");
-                values.add(getSharedPreferences(getString(R.string.S_PREFS), MODE_PRIVATE).getString("id", "0"));
+                values.add(sPrefs.getString("id", "0"));
                 params.add("name");
                 values.add(name);
                 params.add("email");
                 values.add(email);
                 params.add("feedback");
                 values.add(msg);
+                params.add("access_token");
+                values.add(sPrefs.getString("access_token", "0"));
+
 
                 new BackgroundTaskPost(url, params, values, new BackgroundTaskPost.AsyncResponse() {
                     @Override
@@ -96,7 +107,8 @@ public class FeedbackActivity extends AppCompatActivity implements View.OnClickL
                         if(output.contains("truexxx"))
                             Toast.makeText(FeedbackActivity.this, getString(R.string.success_feed), Toast.LENGTH_LONG).show();
                         else
-                            Toast.makeText(FeedbackActivity.this, getString(R.string.try_again), Toast.LENGTH_LONG).show();
+                           new Utilities().checkIfLogged(output,FeedbackActivity.this);
+                           // Toast.makeText(FeedbackActivity.this, getString(R.string.try_again), Toast.LENGTH_LONG).show();
                         finish();
                     }
                 }).execute();

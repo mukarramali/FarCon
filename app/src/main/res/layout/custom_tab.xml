@@ -6,7 +6,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tab"
-        android:textColor="@color/white"
+        android:textColor="@color/colorPrimary"
         android:textSize="20dp"
         android:layout_gravity="center_horizontal"
         />

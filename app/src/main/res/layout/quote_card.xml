@@ -10,13 +10,15 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:hint="Item Name"
-        android:layout_marginRight="10dp"/>
+        android:layout_marginRight="10dp"
+        android:background="@drawable/rectangle_card"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="3"
         android:hint="Kg"
         android:inputType="number"
-        android:maxLength="2"/>
+        android:maxLength="2"
+        android:background="@drawable/rectangle_card"/>
 
 </LinearLayout>

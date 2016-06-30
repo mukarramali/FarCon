@@ -3,6 +3,10 @@ package prashushi.farcon;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.inputmethodservice.Keyboard;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +20,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.SearchView;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +32,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -50,7 +56,10 @@ public class HomeActivity extends AppCompatActivity
     DBHelper mydb;
     FloatingActionButton fab;
     QuoteFragment quote;
-
+    ShopFragment shop;
+    ComboFragment combo;
+    int count=0;
+    SearchView search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,44 +72,13 @@ public class HomeActivity extends AppCompatActivity
         editor=sPrefs.edit();
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab_flag=1;
+        search = (SearchView) findViewById( R.id.search);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View view) {
-                if(fab_flag==1) {
-
-                    setFabImage(R.drawable.close);
-                    int n= 0;
-                    float cost=0;
-                    try{
-                        n=mydb.numberOfRows();
-                        cost=mydb.getTotalCost();
-
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    String st="";
-                    if(n>0)
-                        st=n+" Item(s) \nTotal: Rs."+cost;
-                    else st="Cart Empty";
-
-                    snackbar=Snackbar.make(view, st, Snackbar.LENGTH_INDEFINITE)
-                            .setAction("Action", null);
-                    snackbar.show();
-
-                    fab_flag=0;
-                }
-                else if(fab_flag==0){
-                    setFabImage(R.drawable.price);
-                    snackbar.dismiss();
-                    fab_flag=1;
-                }
-                else{
-                    System.out.println("***");
-                    sendQuote();
-
-                }
+                fabFunction(view);
 
             }
         });
@@ -114,8 +92,71 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        search.setOnQueryTextListener(listener);
         setTabs();
     }
+    SearchView.OnQueryTextListener listener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextChange(String query) {
+            query = query.toLowerCase();
+
+/*            mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+            mAdapter = new Adapter(filteredList, MainActivity.this);
+            mRecyclerView.setAdapter(mAdapter);
+            mAdapter.notifyDataSetChanged();  // data set changed
+
+  */          return true;
+
+        }
+        public boolean onQueryTextSubmit(String query) {
+            return false;
+        }
+    };
+
+    private void fabFunction(View view) {
+        doIncrease();
+        if(fab_flag==1) {
+
+            setFabImage(R.drawable.close);
+            int n= 0;
+            float cost=0;
+            try{
+                n=mydb.numberOfRows();
+                cost=mydb.getTotalCost();
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            String st="";
+            if(n>0)
+                st=n+" Item(s) \nTotal: Rs."+cost;
+            else st="Cart Empty";
+
+            snackbar=Snackbar.make(view, st, Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Action", null);
+            snackbar.show();
+
+            fab_flag=0;
+        }
+        else if(fab_flag==0){
+            setFabImage(R.drawable.price);
+            snackbar.dismiss();
+            fab_flag=1;
+        }
+        else{
+            System.out.println("***");
+            sendQuote();
+
+        }
+
+    }
+
+    private void doIncrease() {
+        count++;
+        invalidateOptionsMenu();
+
+    }
+
 
     private void sendQuote() {
 
@@ -124,7 +165,6 @@ public class HomeActivity extends AppCompatActivity
             try {
                 LinearLayout container = (LinearLayout) v.findViewById(R.id.layout_container);
                 int n = container.getChildCount();
-                System.out.println("Chils:" + n);
                 JSONArray jsonArray = new JSONArray();
                 JSONObject object;
                 for (int i = 0; i < n; i++) {
@@ -208,6 +248,10 @@ public class HomeActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_home, menu);
+       // MenuItem menuItem = menu.findItem(R.id.testAction);
+       // menuItem.setIcon(buildCounterDrawable(count, R.drawable.cart_white));
+
+
         return true;
     }
 
@@ -288,14 +332,16 @@ public class HomeActivity extends AppCompatActivity
             // LinearLayout ll= (LinearLayout)tabLayout.getTabAt(i).getCustomView();
              TextView tab = (TextView) tabLayout.getTabAt(i).getCustomView();
 
-             tab.setTextColor(getResources().getColor(R.color.colorAccent));
+            // tab.setTextColor(getResources().getColor(R.color.colorAccent));
+             tab.setTypeface(null, Typeface.BOLD);
          }
             else{
            //  LinearLayout ll= (LinearLayout)
              TextView tab = (TextView)tabLayout.getTabAt(i).getCustomView();
-             tab.setTextColor(getResources().getColor(R.color.white));
+             //tab.setTextColor(getResources().getColor(R.color.white));
 
-         }
+             tab.setTypeface(null, Typeface.NORMAL);
+            }
          }
         switch (position){
             case 0:
@@ -322,6 +368,7 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+
     class TabsPagerAdapter extends FragmentPagerAdapter {
 
         public TabsPagerAdapter(FragmentManager fm) {
@@ -334,10 +381,12 @@ public class HomeActivity extends AppCompatActivity
             switch (index) {
                 case 0:
                     // Top Rated fragment activity
-                    return new ShopFragment();
+                    shop=new ShopFragment();
+                    return shop;
                 case 1:
                     // Games fragment activity
-                    return new ComboFragment();
+                    combo=new ComboFragment();
+                    return combo;
                 case 2:
                     // Movies fragment activity
                     quote=new QuoteFragment();
@@ -362,6 +411,36 @@ public class HomeActivity extends AppCompatActivity
             fab.setImageDrawable(getResources().getDrawable(id));
         }
 
+    }
+
+
+    private Drawable buildCounterDrawable(int count, int backgroundImageId) {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        System.out.println("here");
+        View view = inflater.inflate(R.layout.counter_menuitem_layout, null);
+        view.setBackgroundResource(backgroundImageId);
+
+        if (count == 0) {
+            View counterTextPanel = view.findViewById(R.id.counterValuePanel);
+            counterTextPanel.setVisibility(View.GONE);
+        } else {
+            TextView textView = (TextView) view.findViewById(R.id.count);
+            textView.setText("" + count);
+        }
+
+        view.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+
+        view.setDrawingCacheEnabled(true);
+        view.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+        view.setDrawingCacheEnabled(false);
+
+        System.out.println("again");
+        return new BitmapDrawable(getResources(), bitmap);
     }
 
     @Override

@@ -16,7 +16,7 @@ import android.util.Log;
  */
 public class SmsReceiver extends BroadcastReceiver {
     private static final String TAG = SmsReceiver.class.getSimpleName();
-
+    String code;
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -29,7 +29,7 @@ public class SmsReceiver extends BroadcastReceiver {
                     String senderAddress = currentMessage.getDisplayOriginatingAddress();
                     String message = currentMessage.getDisplayMessageBody();
 
-                    Log.e(TAG, "Received SMS: " + message + ", Sender: " + senderAddress);
+                    //Log.e(TAG, "Received SMS: " + message + ", Sender: " + senderAddress);
 
                     // if the SMS is not from our gateway, ignore the message
                     if (!senderAddress.contains("FarCon")) {
@@ -39,13 +39,13 @@ public class SmsReceiver extends BroadcastReceiver {
                     // verification code from sms
                     String verificationCode = getVerificationCode(message);
 
-                    Log.e(TAG, "OTP received: " + verificationCode);
-
-                    System.out.println("OTP received: " + verificationCode);
-            /*        Intent hhtpIntent = new Intent(context, HttpService.class);
-                    hhtpIntent.putExtra("otp", verificationCode);
-                    context.startService(hhtpIntent);
-              */  }
+                  //  System.out.println("OTP received: " + verificationCode);
+                    //Bundle extras = intent.getExtras();
+                    Intent i = new Intent("BroadcastOTP");
+                    // Data you need to pass to activity
+                    i.putExtra("otp", verificationCode);
+                    code=verificationCode;
+                    context.sendBroadcast(i); }
             }
         } catch (Exception e) {
             Log.e(TAG, "Exception: " + e.getMessage());
@@ -54,7 +54,7 @@ public class SmsReceiver extends BroadcastReceiver {
 
     /**
      * Getting the OTP from sms message body
-     * ':' is the separator of OTP from the message
+     * '. ' is the separator of OTP from the message
      *
      * @param message
      * @return

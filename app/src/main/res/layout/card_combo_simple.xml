@@ -46,52 +46,49 @@
             android:layout_marginTop="5dp"
             />
 
-        <Button
-            android:layout_width="60dp"
-            android:layout_height="30dp"
-            android:text="@string/add"
-            android:layout_alignParentRight="true"
-            android:id="@+id/bt_add"
-            style="@style/MyButton"
-            android:textSize="15dp"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/white"
-            android:layout_below="@id/tv_content"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="120dp"
+            android:text="Offer"
+            android:id="@+id/tv_offer"
             android:layout_marginBottom="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/button"
-            />
+
+            android:layout_below="@id/tv_content"/>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/tv_content"
             android:orientation="horizontal"
-            android:layout_marginRight="20dp"
-            android:layout_alignTop="@+id/bt_add"
-            android:layout_toLeftOf="@+id/bt_add"
-            android:layout_toStartOf="@+id/bt_add"
-            android:id="@+id/linearLayout2">
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:id="@+id/layout_count">
             <Button
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 style="@style/MyButton"
-                android:background="@drawable/minus"
-                android:id="@+id/bt_minus"/>
+                android:background="@drawable/minus_square"
+                android:id="@+id/bt_minus"
+                android:visibility="invisible"/>
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:maxLength="2"
-                android:text="1"
+                android:text="0"
                 android:padding="3dp"
-                android:background="@drawable/box"
+                android:background="@drawable/box_blank"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="2dp"
-                android:id="@+id/et_quantity"/>
+                android:id="@+id/et_quantity"
+                android:visibility="invisible"/>
             <Button
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:background="@drawable/plus"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/plus_square"
                 style="@style/MyButton"
                 android:id="@+id/bt_plus"/>
         </LinearLayout>

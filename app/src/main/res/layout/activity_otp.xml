@@ -6,9 +6,6 @@
     android:fitsSystemWindows="true"
     tools:context="prashushi.farcon.WelcomeActivity"
     >
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -80,7 +77,7 @@
             android:orientation="horizontal"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="10dp"
-            android:layout_above="@id/input_layout_otp"
+            android:layout_above="@id/tv_container"
             android:id="@+id/tv_container2">
 
             <TextView
@@ -95,8 +92,8 @@
 
         </LinearLayout>
         <ImageView
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:src="@drawable/otp"
             android:layout_above="@+id/tv_container2"
             android:layout_centerHorizontal="true"
@@ -105,5 +102,5 @@
 
     </RelativeLayout>
 
-    </ScrollView>
+
 </android.support.design.widget.CoordinatorLayout>

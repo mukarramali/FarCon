@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
@@ -37,12 +38,15 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
 
     private Context mContext;
     JSONArray combos;
-    String[] combo_id, combo_name, combo_cost, combo_content, combo_thumbnail;
+    String[] combo_id, combo_name, combo_cost, combo_content, combo_thumbnail, percent_off, min_qty;
     SharedPreferences sPrefs;
     SharedPreferences.Editor editor;
     private DBHelper mydb ;
     EditText etQuantity;
     String id, quantity;
+    String _quantity, _qty0, _id, _cost;
+    int _i;
+
     public RecyclerAdapterCombo(Context context, JSONArray combos) {
         mContext = context;
         System.out.println("###");
@@ -52,6 +56,8 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
         combo_cost=new String[combos.length()];
         combo_content=new String[combos.length()];
         combo_thumbnail=new String[combos.length()];
+        percent_off=new String[combos.length()];
+        min_qty=new String[combos.length()];
         sPrefs=context.getSharedPreferences(context.getString(R.string.S_PREFS), context.MODE_PRIVATE);
         editor=sPrefs.edit();
         mydb = new DBHelper(context);
@@ -81,80 +87,11 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
             });
 
   */
-            itemView.findViewById(R.id.bt_add).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    i=getAdapterPosition();
-                    id=combo_id[i];
-                    etQuantity=(EditText) itemView.findViewById(R.id.et_quantity);
-                    String qty=etQuantity.getText().toString();
-                    if(qty.compareTo("0")==0)
-                    {//Toast.makeText(mContext, "Removed", ).show();
-                        final Toast toast = Toast.makeText(mContext, "Removed", Toast.LENGTH_SHORT);
-                        toast.show();
-
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                toast.cancel();
-                            }
-                        }, 300);
-                    }
-                    else
-                    {//Toast.makeText(mContext, "Removed", ).show();
-                        final Toast toast = Toast.makeText(mContext, "Added", Toast.LENGTH_SHORT);
-                        toast.show();
-
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                toast.cancel();
-                            }
-                        }, 300);
-                    }
-                    System.out.println("Quantity:"+etQuantity.getText().toString());
-                    quantity="";
-                    if(mydb.ifPresent(id)){
-                        quantity=mydb.getQuantity(id);
-                        mydb.updateItem(id, combo_cost[i],etQuantity.getText().toString());
-                    }
-                    else
-                        mydb.insertItem(combo_id[i],combo_name[i],combo_cost[i], etQuantity.getText().toString());
-
-                    sPrefs=mContext.getSharedPreferences(mContext.getString(R.string.S_PREFS), mContext.MODE_PRIVATE);
-                    String user_id=sPrefs.getString("id", "0");
-
-                    String url=mContext.getString(R.string.local_host)+mContext.getString(R.string.add_cart)+user_id+
-                            "/"+combo_id[i]+"/"+etQuantity.getText().toString()+"/"
-                            +(Double.valueOf(combo_cost[i])*(Double.valueOf(etQuantity.getText().toString())))+"/1";
-
-                    new BackgroundTask(url, new ArrayList<String>(), new ArrayList<String>(), new BackgroundTask.AsyncResponse() {
-                        @Override
-                        public void processFinish(String output) {
-                            System.out.println(output);
-                            if(!output.contains("truexxx")){
-                                //remove the recent added combo
-                                mydb.updateItem(id, combo_cost[i],quantity);
-                                Toast.makeText(mContext, mContext.getString(R.string.try_again), Toast.LENGTH_LONG).show();
-                            }
-                            else
-                                System.out.println("Added to cart!");
-                        }
-                    }).execute();
-
-                }
-            });
-
             itemView.findViewById(R.id.bt_minus).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     i=getAdapterPosition();
-                    etQuantity=(EditText) itemView.findViewById(R.id.et_quantity);
-                    int n=Integer.parseInt(etQuantity.getText().toString());
-                    if(n>0)
-                        etQuantity.setText((n-1)+"");
+                    updateCart(i, itemView, -1);
 
                 }
             });
@@ -162,14 +99,99 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
                 @Override
                 public void onClick(View v) {
                     i=getAdapterPosition();
-                    etQuantity=(EditText) itemView.findViewById(R.id.et_quantity);
-                    int n=Integer.parseInt(etQuantity.getText().toString());
-                    if(n<999)
-                        etQuantity.setText((n+1)+"");
+                    updateCart(i, itemView, +1);
 
                 }
             });
         }
+    }
+
+    private void makeVisible(View v, Boolean b) {
+
+        v.findViewById(R.id.bt_minus).setVisibility(b==true?View.VISIBLE:View.INVISIBLE);
+        v.findViewById(R.id.et_quantity).setVisibility(b==true?View.VISIBLE:View.INVISIBLE);
+
+
+    }
+
+    void updateCart(int i, View itemView, int c){
+        _i=i;
+
+
+        EditText et= (EditText) itemView.findViewById(R.id.et_quantity);
+        int qty= Integer.parseInt(et.getText().toString());
+        qty+=c;
+        et.setText(qty+"");
+
+
+        makeVisible(itemView, qty==0?false:true);
+        printToast(qty);
+        String id=combo_id[i];
+        _id=id;
+        String cost=combo_cost[i];
+        _cost=cost;
+
+        if(mydb.ifPresent(id)){
+            quantity=mydb.getQuantity(id);
+            _quantity=quantity;
+            mydb.updateItem(id, String.format("%.1f",(Double.valueOf(combo_cost[i])*(Double.valueOf(qty)))),qty+"");
+        }
+        else {
+            _quantity="0";
+            mydb.insertItem(combo_id[i], combo_name[i], String.format("%.1f", (Double.valueOf(combo_cost[i]) * (Double.valueOf(qty)))), qty + "");
+        }
+
+        //summary end
+        sPrefs=mContext.getSharedPreferences(mContext.getString(R.string.S_PREFS), mContext.MODE_PRIVATE);
+        String user_id=sPrefs.getString("id", "0");
+
+        String url=mContext.getString(R.string.local_host)+mContext.getString(R.string.add_cart);
+
+        ArrayList<String> params=new ArrayList<>();
+        ArrayList<String> values=new ArrayList<>();
+
+        params.add("id");
+        values.add(user_id);
+        params.add("item_id");
+        values.add(id);
+        params.add("cost");
+        values.add(String.format("%.1f",Double.valueOf(cost)*Double.valueOf(qty))+"");
+        params.add("qty");
+        values.add(qty+"");
+        params.add("flag");
+        values.add("1");
+        params.add("access_token");
+        values.add(sPrefs.getString("access_token", "0"));
+
+        new BackgroundTaskPost(url, params, values, new BackgroundTaskPost.AsyncResponse() {
+            @Override
+            public void processFinish(String output) {
+                System.out.println(output);
+                if(!output.contains("truexxx")){
+                    //remove the recent added item
+                    mydb.updateItem(_id, _cost,_quantity);
+                    new Utilities().checkIfLogged(output, mContext);
+                }
+                else {
+                    //n+" Item \nTotal: Rs."+cost
+                }
+            }
+        }).execute();
+
+
+    }
+
+    private void printToast(int qty) {
+        final Toast toast = Toast.makeText(mContext, qty==0?"Removed":"Added", Toast.LENGTH_SHORT);
+        toast.show();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                toast.cancel();
+            }
+        }, 300);
+
     }
 
 
@@ -196,6 +218,8 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
             combo_name[i]=capitalize(combo.optString("name"))+"";
             combo_cost[i]=combo.optString("cost")+"";
             combo_thumbnail[i]=combo.optString("thumbnail")+"";
+            percent_off[i]=combo.optInt("percent_off")+"";
+            min_qty[i]=combo.optInt("min_qty")+"";
             JSONArray array=combo.optJSONArray("items");
             combo_content[i]=fetchString(array);
         } catch (JSONException e) {
@@ -213,6 +237,16 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
 
         TextView combo_costTv= (TextView) holder.itemView.findViewById(R.id.tv_price);
         combo_costTv.setText(combo_cost[position]+"/Item");
+
+        TextView combo_offerTv = (TextView) holder.itemView.findViewById(R.id.tv_offer);
+
+        int prcnt=Integer.parseInt(percent_off[i]);
+        if(prcnt>0) {
+            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "fonts/italics.ttf");
+            combo_offerTv.setText("Buy "+min_qty[i]+"Kg, Get "+percent_off[i]+"% Off");
+            combo_offerTv.setTypeface(tf);
+        }
+
 
         TextView combo_contentTv= (TextView) holder.itemView.findViewById(R.id.tv_content);
         combo_contentTv.setText(combo_content[position]);
@@ -272,7 +306,7 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
                 JSONObject obj=array.getJSONObject(i);
                 String name=obj.getString("item_name");
                 String qty=obj.getString("item_qty");
-                output.append(name+" "+qty+"Kg\n");
+                output.append(capitalize(name)+" "+qty+"Kg\n");
 
             }
         } catch (JSONException e) {

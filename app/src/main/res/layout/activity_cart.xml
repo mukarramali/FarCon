@@ -19,7 +19,7 @@
         app:popupTheme="@style/MyMaterialTheme.PopupOverlay" >
     </android.support.v7.widget.Toolbar>
 
-        <LinearLayout
+<!--        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="invisible"
@@ -34,7 +34,7 @@
                 android:id="@+id/tv_cart_summary"/>
 
         </LinearLayout>
-
+-->
 
     </android.support.design.widget.AppBarLayout>
 

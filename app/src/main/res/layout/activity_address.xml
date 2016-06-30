@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/grey_back"
     tools:context="prashushi.farcon.AddressActivity">
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -26,196 +27,124 @@
         >
 
 
-        <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Details"
-    android:layout_marginTop="10dp"
-    android:textSize="20dp"
-            android:textColor="@color/colorPrimary"
-            android:textStyle="bold"
-            android:layout_marginRight="20dp"
-            android:layout_gravity="right"
-            />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/colorPrimary"/>
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/input_layout_1"
-        >
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Your Name"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="5dp"
-        android:id="@+id/et_name"/>
-        </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/input_layout"
-        >
-
-
+        android:id="@+id/et_name"
+        android:background="@drawable/rectangle_card"/>
         <EditText
             android:id="@+id/et_phone"
+            android:hint="PhoneNo"
+            android:inputType="number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Phone Number"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rectangle_card"/>
+
+        <EditText
+            android:hint="No Of Family Members"
+            android:maxLength="2"
+            android:id="@+id/et_member"
             android:inputType="number"
-            android:maxLines="1"
-            android:maxLength="10"
-            android:singleLine="true"
-            android:layout_gravity="center_horizontal"/>
-    </android.support.design.widget.TextInputLayout>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rectangle_card"/>
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/input_layout_3"
-        >
-
-
-
-    <EditText
-        android:layout_width="match_parent"
+        <EditText
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email Address (Optional)"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="5dp"
-            android:id="@+id/et_email"/>
-    </android.support.design.widget.TextInputLayout>
-        <android.support.design.widget.TextInputLayout
+            android:id="@+id/et_email"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/rectangle_card"/>
+
+
+<!--        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/input_layout_10"
-            >
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal"
+            android:weightSum="5">
 
-
+-->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Use My Location"
+            android:textColor="@color/white"
+            android:id="@+id/bt_loc"/>
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Number of Family Members"
-                android:layout_gravity="center_horizontal"
+                android:hint="HouseNo"
                 android:layout_marginTop="5dp"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/et_house"
+                android:background="@drawable/rectangle_card"/>
+
+            <EditText
+                android:hint="Street"
+                android:id="@+id/et_street"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/rectangle_card"/>
+            <EditText
+                android:hint="Area"
+                android:id="@+id/et_area"
+                android:maxLines="1"
+                android:maxLength="10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/rectangle_card"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="PinCode"
                 android:inputType="number"
-                android:maxLength="2"
-                android:id="@+id/et_member"/>
-        </android.support.design.widget.TextInputLayout>
+                android:maxLength="6"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/et_pin"
+                android:background="@drawable/rectangle_card"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Shipping Address"
-            android:layout_marginTop="25dp"
-            android:textSize="20dp"
-            android:textColor="@color/colorPrimary"
-            android:layout_marginRight="20dp"
-            android:layout_gravity="right"
-            android:textStyle="bold"
-            />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="15dp"
-            android:background="@color/colorPrimary"/>
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/input_layout_4"
-        >
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="House Number"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
-            android:id="@+id/et_house"/>
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/input_layout_5"
-        >
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Street"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
-            android:id="@+id/et_street"/>
-    </android.support.design.widget.TextInputLayout>
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/input_layout_6"
-        >
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Area"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
-            android:id="@+id/et_area"/>
-    </android.support.design.widget.TextInputLayout>
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/input_layout_7"
-        >
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="City"
             android:layout_gravity="center_horizontal"
+            android:id="@+id/et_city"
             android:layout_marginTop="5dp"
-            android:id="@+id/et_city"/>
-    </android.support.design.widget.TextInputLayout>
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/input_layout_8"
-        >
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Pin Code"
-            android:inputType="number"
-            android:maxLength="6"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
-            android:id="@+id/et_pin"/>
-    </android.support.design.widget.TextInputLayout>
+            android:background="@drawable/rectangle_card"/>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/input_layout_9"
-            >
-            <EditText
+
+
+        <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="State"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp"
-                android:id="@+id/et_state"/>
-        </android.support.design.widget.TextInputLayout>
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center_horizontal"
+                android:id="@+id/et_state"
+                android:layout_weight="1"
+                android:background="@drawable/rectangle_card"/>
+            </LinearLayout>
 
-    </LinearLayout>
     </ScrollView>
     <Button
         android:layout_width="match_parent"

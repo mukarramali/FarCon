@@ -1,6 +1,8 @@
 package prashushi.farcon;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,6 +23,12 @@ public class QuoteFormActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quote);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Quotation");
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         findViewById(R.id.tv_cancel).setOnClickListener(this);
         findViewById(R.id.tv_send).setOnClickListener(this);
 
@@ -58,8 +66,7 @@ public class QuoteFormActivity extends AppCompatActivity implements View.OnClick
                 EditText etName=(EditText)findViewById(R.id.et_name);
                 String name=etName.getText().toString();
                 if (name.length()==0){
-                    TextInputLayout til=(TextInputLayout)findViewById(R.id.input_layout_1);
-                    til.setError("Can't be empty!");
+                    etName.setError("Can't be empty!");
                 }
                 if(!format(name)){
                     etName.setError("Only alphabets!");
@@ -71,19 +78,21 @@ public class QuoteFormActivity extends AppCompatActivity implements View.OnClick
                 EditText etPhone=(EditText)findViewById(R.id.et_phone);
                 String phone=etPhone.getText().toString();
                 if (phone.length()!=10){
-                    TextInputLayout til=(TextInputLayout)findViewById(R.id.input_layout_3);
-                    til.setError("10 digits length");
+                    etPhone.setError("10 digits length");
                     break;
                 }
                 String item=getIntent().getExtras().getString("item");
+                System.out.println(item);
                 if(item.length()==0)
                     return;
+                SharedPreferences sPrefs=getSharedPreferences(getString(R.string.S_PREFS), MODE_PRIVATE);
+
                 String url=getString(R.string.local_host)+"quote";
                 ArrayList<String> params=new ArrayList<>();
                 ArrayList<String> values=new ArrayList<>();
 
                 params.add("id");
-                values.add(getSharedPreferences(getString(R.string.S_PREFS), MODE_PRIVATE).getString("id", "0"));
+                values.add(sPrefs.getString("id", "0"));
                 params.add("name");
                 values.add(name);
                 params.add("email");
@@ -92,6 +101,8 @@ public class QuoteFormActivity extends AppCompatActivity implements View.OnClick
                 values.add(phone);
                 params.add("item");
                 values.add(item);
+                params.add("access_token");
+                values.add(sPrefs.getString("access_token", "0"));
 
                 new BackgroundTaskPost(url, params, values, new BackgroundTaskPost.AsyncResponse() {
                     @Override

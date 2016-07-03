@@ -1,86 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/grey_back"
-    style="@style/AlertDialog.AppCompat"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:popupTheme="@style/MyMaterialTheme.PopupOverlay" />
 
-
-<ScrollView
-    android:layout_width="wrap_content"
+<ScrollView android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_centerInParent="true"
-    >
+    android:background="@color/colorPrimary"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="300dip"
-        android:layout_height="400dip"
-        android:layout_margin="20dp">
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:orientation="vertical">
         <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Name"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
             android:id="@+id/et_name"
-            android:background="@drawable/rectangle_card"/>
-        <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email (Optional)"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
+            android:background="@drawable/rectangle_card"
+            android:hint="Name"/>
+        <EditText
             android:id="@+id/et_email"
-            android:background="@drawable/rectangle_card"/>
-        <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="What's on your mind?"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
+            android:background="@drawable/rectangle_card"
+            android:hint="Email (Optional)"/>
+        <EditText
             android:id="@+id/et_msg"
-            android:background="@drawable/rectangle_card"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/rectangle_card"
+            android:hint="What's on your mind?"
+            android:minLines="3"/>
 
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:weightSum="4"
+            android:layout_height="30dp"
             android:layout_marginTop="30dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="4">
             <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="5dp"
                 android:layout_weight="1"/>
             <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="5dp"
                 android:layout_weight="1"/>
             <TextView
+                android:id="@+id/tv_cancel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="right"
                 android:layout_weight="1"
                 android:text="Cancel"
-                android:textColor="@color/colorPrimary"
-                android:textStyle="bold"
-                android:layout_gravity="right"
-                android:id="@+id/tv_cancel"/>
+                android:textColor="@color/white"
+                android:textSize="15dp"
+                android:textStyle="bold"/>
             <TextView
+                android:id="@+id/tv_send"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textStyle="bold"
-                android:textColor="@color/colorPrimary"
                 android:text="Send"
-                android:id="@+id/tv_send"/>
+                android:textColor="@color/white"
+                android:textSize="15dp"
+                android:textStyle="bold"/>
 
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
-</RelativeLayout>

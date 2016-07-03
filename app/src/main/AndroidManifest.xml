@@ -51,9 +51,16 @@
             android:parentActivityName=".CartActivity" />
         <activity android:name=".ReferralActivity"
             android:parentActivityName=".HomeActivity"/>
-         <activity android:name=".FeedbackActivity"/>
+         <activity android:name=".FeedbackActivity"
+             android:excludeFromRecents="true"
+             android:theme="@style/Theme.UserDialog"/>
         <activity android:name=".ItemActivity"/>
-        <activity android:name=".QuoteFormActivity"/>
+        <activity android:name=".QuoteFormActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.UserDialog"/>
+        <activity android:name=".TempCartActivity"
+            android:parentActivityName=".CartActivity"
+ />
     </application>
 
 </manifest>

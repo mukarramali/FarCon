@@ -8,6 +8,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.inputmethodservice.Keyboard;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -300,6 +301,11 @@ public class HomeActivity extends AppCompatActivity
             sendIntent.setType("text/plain");
             startActivity(Intent.createChooser(sendIntent, getString(R.string.share_through)));  } else if (id == R.id.nav_feedback) {
             startActivity(new Intent(this, FeedbackActivity.class));
+        } else if (id == R.id.nav_visit){
+            Uri uri = Uri.parse("http://www.farcon.in"); // missing 'http://' will cause crashed
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -414,7 +420,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
-    private Drawable buildCounterDrawable(int count, int backgroundImageId) {
+/*    private Drawable buildCounterDrawable(int count, int backgroundImageId) {
         LayoutInflater inflater = LayoutInflater.from(this);
         System.out.println("here");
         View view = inflater.inflate(R.layout.counter_menuitem_layout, null);
@@ -442,7 +448,7 @@ public class HomeActivity extends AppCompatActivity
         System.out.println("again");
         return new BitmapDrawable(getResources(), bitmap);
     }
-
+*/
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {

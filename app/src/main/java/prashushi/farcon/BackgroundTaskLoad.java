@@ -23,11 +23,10 @@ import java.util.ArrayList;
 
 
 class BackgroundTaskLoad extends AsyncTask<Void, Void, Boolean> {
+    public AsyncResponse delegate = null;
     String url="";
     ArrayList<String> params, values;
     String result="";
-    public AsyncResponse delegate = null;
-
     Context activity;
     ProgressDialog pDialog;
     BackgroundTaskLoad(String url, Context activity, ArrayList<String> params, ArrayList<String> values, AsyncResponse delegate){
@@ -45,60 +44,37 @@ class BackgroundTaskLoad extends AsyncTask<Void, Void, Boolean> {
         pDialog.setMessage("Loading . Please wait...");
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(true);
-      /*  pDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                if(this!=null)
-                    this.cancel(true);
-                loadProfileTask=null;
-                Toast.makeText(ProfileStudents.this, "Try later!", Toast.LENGTH_LONG).show();
-            }
-        });
-        */pDialog.show();
-
+        pDialog.show();
     }
 
 
     @Override
     protected Boolean doInBackground(Void... param) {
-        //________________load image
-
         StringBuilder sb = new StringBuilder();
         try {
-
-//            String data = URLEncoder.encode(params[0], "UTF-8") + "=" + URLEncoder.encode(values[0], "UTF-8");
             if(params.size()>0)
                 url+="?"+params.get(0)+"="+values.get(0);
             for(int i=1;i<values.size();i++) {
-                //              data += "&" + URLEncoder.encode(params[i], "UTF-8") + "=" + URLEncoder.encode(values[i], "UTF-8");
                 url+="&"+params.get(i)+"="+values.get(i);
             }
             System.out.println(url);
-            System.out.println("url-2");
             URL Url = new URL(url);
             URLConnection conn = Url.openConnection();
-
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-            String line = null;// Read Server Response
-
+            String line;// Read Server Response
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
             }
-        } catch (ClientProtocolException e) {
+            result=sb.toString();
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            result="falsexxx";
         }
-        result=sb.toString();
-        if(!result.contains("Falsexxx")||result.contains("Truexxx"))
-            return true;
         return false;
     }
 
     @Override
     protected void onPostExecute(Boolean aBoolean) {
-//            mActivity.findViewById(R.id.result)
         if(pDialog!=null)
         pDialog.dismiss();
         System.out.println(result);

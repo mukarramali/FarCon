@@ -31,24 +31,27 @@ public class QuoteFragment extends Fragment implements View.OnClickListener {
         View view=inflater.inflate(R.layout.fragment_quote, container, false);
         layoutContainer= (LinearLayout) view.findViewById(R.id.layout_container);
         view.findViewById(R.id.bt_add).setOnClickListener(this);
-
-
-            return view;
+        view.findViewById(R.id.bt_remove).setOnClickListener(this);
+        return view;
     }
 
     @Override
     public void onClick(View v) {
 
+        int count;
         switch (v.getId()){
             case R.id.bt_add:
                 LinearLayout.LayoutParams params=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 ///  LinearLayout hiddenLayout = (LinearLayout)findViewById(R.id.header);
-                int count;
                 View child=getLayoutInflater(null).inflate(R.layout.quote_card, null);
                 child.setLayoutParams(params);
                 count=layoutContainer.getChildCount();
                 layoutContainer.addView(child,(count));
-
+                break;
+            case R.id.bt_remove:
+                count=layoutContainer.getChildCount();
+                if(count>1)
+                layoutContainer.removeViewAt(count-1);
                 break;
         }
     }

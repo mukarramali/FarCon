@@ -43,6 +43,8 @@ public class ReferralActivity extends AppCompatActivity implements View.OnClickL
     void gotoHome() {
         startActivity(new Intent(ReferralActivity.this, HomeActivity.class));
         finish();
+        overridePendingTransition(R.anim.left_in, R.anim.left_out);
+
 
     }
 
@@ -84,6 +86,8 @@ public class ReferralActivity extends AppCompatActivity implements View.OnClickL
                     etReferral.setVisibility(View.INVISIBLE);
                     startActivity(new Intent(ReferralActivity.this, HomeActivity.class));
                     finish();
+                    overridePendingTransition(R.anim.left_in, R.anim.left_out);
+
                 }
                 else
                     Toast.makeText(ReferralActivity.this, getString(R.string.try_again), Toast.LENGTH_LONG).show();

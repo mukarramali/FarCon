@@ -62,7 +62,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
             System.out.println("Welcome Activity-> id:"+sPrefs.getString("id", "")+", phone:"+sPrefs.getString("phone", ""));
             startActivity(new Intent(this, HomeActivity.class));
-            //    overridePendingTransition(R.anim.push_up_out, R.anim.push_up_in);
+            overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
 
             finish();
         }
@@ -91,6 +91,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     editor.commit();
                     System.out.println("WA otp:" + sPrefs.getString("otp", "0"));
                     startActivity(new Intent(WelcomeActivity.this, OTPActivity.class));
+                    overridePendingTransition(R.anim.left_in, R.anim.left_out);
                     finish();
                 } catch (JSONException e) {
                     e.printStackTrace();

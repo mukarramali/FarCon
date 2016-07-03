@@ -1,14 +1,19 @@
 package prashushi.farcon;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Transition;
@@ -27,11 +32,25 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class OTPActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 999;
     SharedPreferences sPrefs;
     SharedPreferences.Editor editor;
     EditText et;
     String number = "";
     Button bt_verify;
+    BroadcastReceiver broadcastReceiver=new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                String code = intent.getExtras().getString("otp");
+                et.setText(code);
+                bt_verify.performClick();
+            }catch (Exception n){
+                n.printStackTrace();
+            }
+        }
+    };
+
     //IncomingSms broadcast_receiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,23 +68,16 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         //IntentFilter filter1 = new IntentFilter();
         //filter1.addAction("android.provider.Telephony.SMS_RECEIVED");
         registerReceiver(broadcastReceiver, new IntentFilter("BroadcastOTP"));
-    }
-
-
-    BroadcastReceiver broadcastReceiver=new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            try {
-                String code = intent.getExtras().getString("otp");
-                et.setText(code);
-                bt_verify.performClick();
-            }catch (Exception n){
-                n.printStackTrace();
-            }
+        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            ActivityCompat.requestPermissions( this, new String[] {  Manifest.permission.READ_SMS , Manifest.permission.RECEIVE_SMS },
+                    MY_PERMISSIONS_REQUEST_LOCATION );
+            return;
         }
-    };
 
-
+    }
 
     Boolean checkOTP(String otp) {
         String otp1 = sPrefs.getString("otp", "");
@@ -82,22 +94,6 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         }
     }
 
-    public void recivedSms(String message) {
-
-        System.out.println("Received msg:" + message);
-        sPrefs = getSharedPreferences(getString(R.string.S_PREFS), MODE_PRIVATE);
-        String otp = sPrefs.getString("otp", "0");
-        if (otp.compareTo("0")==0) {
-            errorRestart();
-            return;
-        }
-        if (message.contains(otp)) {
-            //     stopService(new Intent(this, IncomingSms.class));
-       //     unregisterReceiver(broadcast_receiver);
-            askReferral();
-        }
-
-    }
 
     private void askReferral() {
         String id = sPrefs.getString("id", "0");
@@ -137,6 +133,8 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         Toast.makeText(this, getString(R.string.try_again), Toast.LENGTH_LONG).show();
         startActivity(new Intent(this, WelcomeActivity.class));
         finish();
+        overridePendingTransition(R.anim.right_in, R.anim.right_out);
+
     }
 
     boolean validatePhone(String phone) {
@@ -147,7 +145,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_verify:
-
+                unregisterReceiver(broadcastReceiver);
                 if(!checkOTP(et.getText().toString()))
                     break;
 
@@ -183,10 +181,13 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
                             if (isNew) {
                                 startActivity(new Intent(OTPActivity.this, ReferralActivity.class));
                                 finish();
+                                overridePendingTransition(R.anim.left_in, R.anim.left_out);
                             } else {
                                 startActivity(new Intent(OTPActivity.this, HomeActivity.class));
+                                overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);
                                 finish();
                             }
+
                         }
 
                     }
@@ -201,8 +202,9 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
                 break;
             case R.id.tv_num_enter:
 
-                onBackPressed();
-
+                startActivity(new Intent(this, WelcomeActivity.class));
+                overridePendingTransition(R.anim.right_in, R.anim.right_out);
+                finish();
                 break;
         }
     }
@@ -257,14 +259,14 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         return super.onKeyDown(keyCode, event);
     }
 
-  /*  void setTransitions() {
-    if(Build.VERSION.SDK_INT>=21)
-    {
-        TransitionInflater inflater = TransitionInflater.from(this);
-        Transition transitionExit = inflater.inflateTransition(R.transition.transition_up_out);
-        getWindow().setExitTransition(transitionExit);
-        Transition transitionEnter = inflater.inflateTransition(R.transition.transition_up_in);
-        getWindow().setEnterTransition(transitionEnter);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION:
+         //       registerReceiver(broadcastReceiver, new IntentFilter("BroadcastOTP"));
+
+                break;
+
+        }
     }
-}*/
 }

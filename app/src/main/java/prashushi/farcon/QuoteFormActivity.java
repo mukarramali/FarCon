@@ -17,18 +17,19 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class QuoteFormActivity extends AppCompatActivity implements View.OnClickListener {
+public class QuoteFormActivity extends Activity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quote);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      /*  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Quotation");
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        */
         findViewById(R.id.tv_cancel).setOnClickListener(this);
         findViewById(R.id.tv_send).setOnClickListener(this);
 

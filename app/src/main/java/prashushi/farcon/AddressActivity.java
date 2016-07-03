@@ -26,17 +26,18 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class AddressActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class AddressActivity extends AppCompatActivity
+        implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     EditText etName, etEmail, etPhone, etHouse, etStreet, etArea, etCity, etPin, etState, etMember;
     SharedPreferences sPref;
     SharedPreferences.Editor editor;
     DBHelper mydb;
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
-    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    private Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +54,11 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
         getSupportActionBar().setTitle(getString(R.string.app_name));
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
         findViewById(R.id.tv_order).setOnClickListener(this);
         sPref=getSharedPreferences(getString(R.string.S_PREFS), MODE_PRIVATE);
         editor=sPref.edit();
         initET();
         findViewById(R.id.bt_loc).setOnClickListener(this);
-
         if (checkPlayServices()) {
             // Building the GoogleApi client
             buildGoogleApiClient();
@@ -71,9 +69,6 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
      * Method to display the location on UI
      * */
     private void displayLocation() {
-
-
-
         if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -81,8 +76,7 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
                     MY_PERMISSIONS_REQUEST_LOCATION );
             return;
         }
-        mLastLocation = LocationServices.FusedLocationApi
-                .getLastLocation(mGoogleApiClient);
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         if (mLastLocation != null) {
             double latitude = mLastLocation.getLatitude();
@@ -91,31 +85,34 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
             new GetAddress(this, longitude, latitude, new GetAddress.AsyncResponse() {
                 @Override
                 public void processFinish(Address address, String result) {
-                    if(address!=null)
+                if(address!=null)
+                {
+                    if(address.getSubLocality()!=null)
                     {
-                        if(address.getSubLocality()!=null){
-                            String area=address.getSubLocality();
-                            etArea.setText(area);
-                            int pos=result.indexOf(area);
-                            String street=result.substring(0,pos-1);
-                            etStreet.setText(street);
+                        String area=address.getSubLocality();
+                        etArea.setText(area);
+                        int pos=result.indexOf(area);
+                        String street=result.substring(0,pos-2);
+                        if(address.getSubThoroughfare()!=null)
+                            street=address.getSubThoroughfare();
+                        if(street.contains("\n"))
+                            street=street.substring(street.indexOf("\n")+1, street.length());
 
-                        }
-                        if(address.getLocality()!=null)
-                            etCity.setText(address.getLocality());
-                        if(address.getPostalCode()!=null)
-                            etPin.setText(address.getPostalCode());
-                        if(address.getAdminArea()!=null)
-                            etState.setText(address.getAdminArea());
-
+                        etStreet.setText(street);
                     }
-                    else
-                        Toast.makeText(AddressActivity.this, "Sorry, Couldn't find your location!", Toast.LENGTH_LONG).show();
+                    if(address.getLocality()!=null)
+                        etCity.setText(address.getLocality());
+                    if(address.getPostalCode()!=null)
+                        etPin.setText(address.getPostalCode());
+                    if(address.getAdminArea()!=null)
+                        etState.setText(address.getAdminArea());
+                }
+                else
+                    Toast.makeText(AddressActivity.this, "Sorry, Couldn't find your location!", Toast.LENGTH_LONG).show();
                 }
             }).execute();
 
         } else {
-
             Toast.makeText(this, "Couldn't get the location. Make sure location is enabled on the device!", Toast.LENGTH_LONG).show();
         }
     }
@@ -125,17 +122,14 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     displayLocation();
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-
-                } else {
-
+                }
+                else
+                {
                     Toast.makeText(this, "Allow location permission to this app from Settings>Apps!", Toast.LENGTH_LONG).show();
-
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
@@ -144,7 +138,8 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
 
             // other 'case' lines to check for other
             // permissions this app might request
-        }}
+        }
+    }
 
     /**
      * Creating google api client object
@@ -160,16 +155,14 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
      * Method to verify google play services on the device
      * */
     private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil
-                .isGooglePlayServicesAvailable(this);
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        "This device is not supported.", Toast.LENGTH_LONG)
-                        .show();
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(),"This device is not supported.", Toast.LENGTH_LONG).show();
                 finish();
             }
             return false;
@@ -188,7 +181,6 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onResume() {
         super.onResume();
-
         checkPlayServices();
     }
 
@@ -203,7 +195,6 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onConnected(Bundle arg0) {
-
         // Once connected with google api, get the location
         displayLocation();
     }
@@ -215,7 +206,7 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
 
 
     private void initET() {
-    etArea= (EditText) findViewById(R.id.et_area);
+        etArea= (EditText) findViewById(R.id.et_area);
         etCity= (EditText) findViewById(R.id.et_city);
         etEmail= (EditText) findViewById(R.id.et_email);
         etHouse= (EditText) findViewById(R.id.et_house);
@@ -244,11 +235,9 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
         switch (v.getId()){
 
             case R.id.bt_loc:
-
                 displayLocation();
-                break;
+            break;
             case R.id.tv_order:
-
                 String name, phone, email, member, house, street, area, city, pin, state;
                 name=etName.getText().toString();
                 phone=etPhone.getText().toString();
@@ -332,12 +321,8 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
                 String id=getSharedPreferences(getString(R.string.S_PREFS), MODE_PRIVATE).getString("id", "0");
                 params.add("id");
                 values.add(id);
-
-                //System.out.println("id:"+id);
-
                 params.add("name");
                 values.add(name);
-
                 params.add("email");
                 values.add(email);
                 params.add("phone_num");
@@ -356,7 +341,6 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
                 values.add(pin);
                 params.add("no");
                 values.add(member);
-
                 params.add("access_token");
                 values.add(sPref.getString("access_token", "0"));
 
@@ -366,16 +350,19 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void processFinish(String output) {
                         if(output.contains("truexxx")) {
-                           String url2=getString(R.string.local_host)+"checkout";
+                            String url2=getString(R.string.local_host)+"checkout";
                             ArrayList<String> params=new ArrayList<>();
                             ArrayList<String> values=new ArrayList<>();
-
                             String id=sPref.getString("id", "0");
                             params.add("id");
                             values.add(id);
                             params.add("access_token");
                             values.add(sPref.getString("access_token", "0"));
-
+                            params.add("code");
+                            String code="NO_PROMO";
+                            if(getIntent().getExtras().containsKey("code"))
+                                code=getIntent().getExtras().getString("code");
+                            values.add(code);
 
                             new BackgroundTaskPost(url2, params, values, new BackgroundTaskPost.AsyncResponse() {
                                 @Override

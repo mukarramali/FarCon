@@ -8,6 +8,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
@@ -30,12 +31,10 @@ import java.util.ArrayList;
 //1 425 3 425 3
 public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder> {
 
-    private Context mContext;
     JSONArray items;
     ArrayList<String> item_id, item_name, item_cost, item_qty, item_flag, percent_off, min_qty, ref_flag;
     SharedPreferences sPrefs;
     SharedPreferences.Editor editor;
-    private DBHelper mydb ;
     TextView etQuantity, tvTotal, tvTotal2;
     String _quantity, _qty0, _id, _cost;
     int _i;
@@ -44,9 +43,12 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
     TextView tv_cart_discount;
     TextView _tvQ, _tvT1, _tvT2;
     RelativeLayout summary_container;
-    int min_amount, discount_off;
+    double min_amount;
+    int discount_off;
+    private Context mContext;
+    private DBHelper mydb ;
 
-    public RecyclerAdapterCart(Context context, int min_amount, int discount_off,JSONArray items, TextView tv, TextView tv2, TextView tv3,RelativeLayout rl) {
+    public RecyclerAdapterCart(Context context, double min_amount, int discount_off,JSONArray items, TextView tv, TextView tv2, TextView tv3,RelativeLayout rl) {
         mContext = context;
         this.items=items;
         this.min_amount=min_amount;
@@ -76,11 +78,16 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
 //            System.out.println(position);
             item = items.getJSONObject(i);
             item_id.add(i, item.optInt("item_id") + "");
-            item_cost.add(i, item.optString("item_cost") + "");
-            item_qty.add(i, item.optString("item_qty") + "");
-            item_flag.add(i, item.optString("flags") + "");
+            item_cost.add(i, Double.valueOf(item.optString("item_cost"))/item.optInt("item_qty") + "");
+            item_qty.add(i, item.optInt("item_qty") + "");
+            item_flag.add(i, item.optInt("flags") + "");
             percent_off.add(i,item.optInt("percent_off")+"");
-            min_qty.add(i,item.optInt("min_qty")+"");
+            String tmp;
+            if(item.has("item_min_qty"))
+                tmp = item.optInt("item_min_qty")+"";
+            else
+                tmp = item.optInt("combo_min_qty")+"";
+            min_qty.add(i,tmp);
             ref_flag.add(i, item.optInt("item_flag", 0)+"");
             String name="";
             if(item.has("item_name"))
@@ -95,69 +102,6 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
         }
     }
 
-    // Not use static
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        int i=0;
-        @TargetApi(Build.VERSION_CODES.KITKAT)
-        public ViewHolder(final View itemView) {
-            super(itemView);
-            etQuantity=(TextView) itemView.findViewById(R.id.et_quantity);
-            tvTotal=(TextView) itemView.findViewById(R.id.tv_total);
-            tvTotal2=(TextView) itemView.findViewById(R.id.tv_total2);
-
-            itemView.findViewById(R.id.bt_minus).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    i=getAdapterPosition();
-                    etQuantity=(TextView) itemView.findViewById(R.id.et_quantity);
-                    tvTotal=(TextView) itemView.findViewById(R.id.tv_total);
-                    tvTotal2=(TextView) itemView.findViewById(R.id.tv_total2);
-                    int n=Integer.parseInt(etQuantity.getText().toString());
-                    if(n>0) {
-                        etQuantity.setText((n - 1) + "");
-                        item_qty.set(i,(n-1) + "");
-                        setText(tvTotal, tvTotal2, i);
-                    }
-
-                    updateCart(i, item_id.get(i), item_name.get(i), item_cost.get(i),(n-1)+"", etQuantity , tvTotal, tvTotal2 );
-  //                  System.out.println("**"+item_name.get(i));
-
-                }
-            });
-            itemView.findViewById(R.id.bt_plus).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    i=getAdapterPosition();
-                    etQuantity=(TextView) itemView.findViewById(R.id.et_quantity);
-                    tvTotal=(TextView) itemView.findViewById(R.id.tv_total);
-                    int n=Integer.parseInt(etQuantity.getText().toString());
-                    if(n<999) {
-                        etQuantity.setText((n + 1) + "");
-                        item_qty.set(i,(n+1)+"");
-                        setText(tvTotal, tvTotal2, i);
-                    }
-                    updateCart(i, item_id.get(i), item_name.get(i), item_cost.get(i),(n+1)+"", etQuantity  , tvTotal, tvTotal2);
-//                    System.out.println("***"+item_name.get(i));
-
-                }
-            });
-            itemView.findViewById(R.id.bt_delete).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    i=getAdapterPosition();
-                    etQuantity=(TextView) itemView.findViewById(R.id.et_quantity);
-                    tvTotal=(TextView) itemView.findViewById(R.id.tv_total);
-                    tvTotal.setText( "Rs. 0.0") ;
-                    //tvTotal2.setText( "Rs. 0.0") ;
-                    item_qty.set(i,"0");
-                    updateCart(i, item_id.get(i), item_name.get(i), item_cost.get(i),item_qty.get(i), etQuantity , tvTotal, tvTotal2);
-           //         System.out.println("****"+item_name.get(i));
-
-                }
-            });
-        }
-    }
-
     void updateCart(int i, final String id, String name, String cost, String qty, TextView tvQ, TextView tvT1, TextView tvT2){
         _id=id;
         _i=i;
@@ -169,9 +113,17 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
 
         _qty0=qty;
 
-        if(mydb.ifPresent(id)){
-            _quantity=mydb.getQuantity(id);
-            mydb.updateItem(id, cost,qty);
+        try {
+            int mydbid = toInt(id);
+            if(items.getJSONObject(i).has("name"))
+                mydbid*=100;
+            if (mydb.ifPresent(mydbid + "")) {
+                _quantity = mydb.getQuantity(mydbid + "");
+                mydb.updateItem(mydbid+"", cost, qty);
+            }
+        }catch (Exception e)
+        {
+
         }
 
 
@@ -215,16 +167,22 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
                 System.out.println(output);
                 if(!output.contains("truexxx")){
                     //remove the recent added item
-                    mydb.updateItem(_id, _cost,_quantity);
+                    try {
+                        int mydbid = toInt(_id);
+                        if(items.getJSONObject(_i).has("name"))
+                            mydbid*=100;
+                            mydb.updateItem(mydbid+"", _cost,_quantity);
+                    }catch (Exception e)
+                    {
+
+                    }
+
                     _tvQ.setText(_quantity);
                     item_qty.set(_i,_quantity);
              setText(_tvT1, _tvT2, _i);
               new Utilities().checkIfLogged(output,mContext);
                 }
-                else {
-                    //n+" Item \nTotal: Rs."+cost
 
-                }
             }
         }).execute();
 
@@ -254,8 +212,8 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
                 _off+=(double)toInt(percent_off.get(j))*toInt(item_qty.get(j))*Double.valueOf(item_cost.get(j))/100;
             _cost+=temp;
         }
-       String st1="";
-        String st2="";
+       String st1;
+        String st2;
 
         double costnew=_cost-_off;
         double costfinal;
@@ -270,7 +228,7 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
 
         if(j>0)
         {
-            st1="Rs."+String.format("%.1f",costnew);
+            st1="SubTotal: Rs."+String.format("%.1f",costnew);
             st2="Rs."+String.format("%.1f",costfinal);
         }
         else{
@@ -286,7 +244,6 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
     public int getItemCount() {
         return items.length();
     }
-
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -352,23 +309,98 @@ public class RecyclerAdapterCart extends Adapter<RecyclerAdapterCart.ViewHolder>
        // int qty=Integer.parseInt(_qty);
         //int min=Integer.parseInt(_min);
         //int per=Integer.parseInt(_per);
-           st= String.format("%.1f",((double)(100-per)*cost)/100);
+           st= String.format("%.1f",((double)(100-per)*cost*qty)/100);
         return  st;
     }
+
     void setText(TextView tv1, TextView tv2, int i){
         int qty=Integer.parseInt(item_qty.get(i));
         int per=Integer.parseInt(percent_off.get(i));
         int min=Integer.parseInt(min_qty.get(i));
         tv1.setText( "Rs. "+String.format("%.1f",(qty)*Double.valueOf(item_cost.get(i)))) ;
         if(per>0&&qty>=min) {
-            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "fonts/italicslined.ttf");
-            tv1.setTypeface(tf);
-            tv2.setText("Rs. " + getCost(per, item_cost.get(i), qty));
+         //   Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "fonts/italicslined.ttf");
+           // tv1.setTypeface(tf);
+            tv1.setPaintFlags(tv1.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            tv2.setText("Sale: Rs. " + getCost(per, item_cost.get(i), qty));
+        }
+        else
+        {
+            //Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "fonts/myriad.ttf");
+            //tv1.setTypeface(tf);
+            tv1.setPaintFlags(0);
+            tv2.setText("");
+
         }
     }
+
     int toInt(String s){
         if(s.compareTo("")==0)
             return 0;
         return Integer.parseInt(s);
+    }
+
+    // Not use static
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        int i=0;
+        @TargetApi(Build.VERSION_CODES.KITKAT)
+        public ViewHolder(final View itemView) {
+            super(itemView);
+            etQuantity=(TextView) itemView.findViewById(R.id.et_quantity);
+            tvTotal=(TextView) itemView.findViewById(R.id.tv_total);
+            tvTotal2=(TextView) itemView.findViewById(R.id.tv_total2);
+
+            itemView.findViewById(R.id.bt_minus).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    i=getAdapterPosition();
+                    etQuantity=(TextView) itemView.findViewById(R.id.et_quantity);
+                    tvTotal=(TextView) itemView.findViewById(R.id.tv_total);
+                    tvTotal2=(TextView) itemView.findViewById(R.id.tv_total2);
+                    int n=Integer.parseInt(etQuantity.getText().toString());
+                    if(n>0) {
+                        etQuantity.setText((n - 1) + "");
+                        item_qty.set(i,(n-1) + "");
+                        setText(tvTotal, tvTotal2, i);
+                    }
+
+                    updateCart(i, item_id.get(i), item_name.get(i), item_cost.get(i),(n-1)+"", etQuantity , tvTotal, tvTotal2 );
+  //                  System.out.println("**"+item_name.get(i));
+
+                }
+            });
+            itemView.findViewById(R.id.bt_plus).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    i=getAdapterPosition();
+                    etQuantity=(TextView) itemView.findViewById(R.id.et_quantity);
+                    tvTotal=(TextView) itemView.findViewById(R.id.tv_total);
+                    tvTotal2=(TextView) itemView.findViewById(R.id.tv_total2);
+                    int n=Integer.parseInt(etQuantity.getText().toString());
+                    if(n<999) {
+                        etQuantity.setText((n + 1) + "");
+                        item_qty.set(i,(n+1)+"");
+                        setText(tvTotal, tvTotal2, i);
+                    }
+                    updateCart(i, item_id.get(i), item_name.get(i), item_cost.get(i),(n+1)+"", etQuantity  , tvTotal, tvTotal2);
+//                    System.out.println("***"+item_name.get(i));
+
+                }
+            });
+            itemView.findViewById(R.id.bt_delete).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    i=getAdapterPosition();
+                    etQuantity=(TextView) itemView.findViewById(R.id.et_quantity);
+                    tvTotal=(TextView) itemView.findViewById(R.id.tv_total);
+                    tvTotal.setText( "Rs. 0.0") ;
+                    //tvTotal2.setText( "Rs. 0.0") ;
+                    item_qty.set(i,"0");
+                    updateCart(i, item_id.get(i), item_name.get(i), item_cost.get(i),item_qty.get(i), etQuantity , tvTotal, tvTotal2);
+           //         System.out.println("****"+item_name.get(i));
+
+                }
+            });
+        }
     }
 }

@@ -11,94 +11,94 @@
         android:layout_height="match_parent">
 
         <Button
+            android:id="@+id/tv_verify"
+            style="@style/MyButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Verify"
-            android:id="@+id/tv_verify"
-            android:textColor="@color/white"
             android:layout_alignParentBottom="true"
-            android:textSize="20dp"
             android:layout_centerHorizontal="true"
-            android:textStyle="bold"
             android:background="@color/colorPrimary"
-            style="@style/MyButton"
+            android:text="Verify"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:textStyle="bold"
             />
 
         <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_otp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/input_layout_otp"
             android:layout_above="@id/tv_verify"
+            android:layout_marginBottom="30dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginBottom="30dp"
             >
             <EditText
+                android:id="@+id/et_otp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter OTP"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
+                android:hint="Enter OTP"
                 android:inputType="number"
-                android:id="@+id/et_otp"
-                android:textSize="20dp"
                 android:textColorHint="#FE0000"
+                android:textSize="20dp"
                 />
         </android.support.design.widget.TextInputLayout>
         <LinearLayout
+            android:id="@+id/tv_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_above="@id/input_layout_otp"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="10dp"
-            android:layout_above="@id/input_layout_otp"
-            android:id="@+id/tv_container">
+            android:orientation="horizontal">
             <TextView
+                android:id="@+id/tv_msg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/receiving_otp"
-                android:textColor="#FE0000"
-                android:id="@+id/tv_msg"
+                android:textColor="@color/greydark"
                 />
             <TextView
+                android:id="@+id/tv_resend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/resend"
                 android:layout_marginLeft="5dp"
-                android:textStyle="bold"
+                android:text="@string/resend"
                 android:textColor="#FE0000"
-                android:id="@+id/tv_resend"
+                android:textStyle="bold"
                 />
 
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/tv_container2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_above="@id/tv_container"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="10dp"
-            android:layout_above="@id/tv_container"
-            android:id="@+id/tv_container2">
+            android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/tv_num_enter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/re_enter_num"
                 android:layout_marginLeft="5dp"
-                android:textStyle="bold"
+                android:text="@string/re_enter_num"
                 android:textColor="#FE0000"
-                android:id="@+id/tv_num_enter"
+                android:textStyle="bold"
                 />
 
         </LinearLayout>
         <ImageView
+            android:id="@+id/imageView2"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:src="@drawable/otp"
             android:layout_above="@+id/tv_container2"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
-            android:id="@+id/imageView2" />
+            android:layout_marginBottom="40dp"
+            android:src="@drawable/otp" />
 
     </RelativeLayout>
 

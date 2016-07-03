@@ -23,11 +23,11 @@
     <string name="buy">Buy>></string>
     <string name="cost">Rs. 120.00</string>
     <string name="shipping">Shipping Address</string>
-    <string name="confirm_order">Your Order Have Been Received.\nThank You For Shopping With Us!</string>
+    <string name="confirm_order">Your Order Have Been Received.\nThank You For Shopping With Us.\nComplementary chillies &amp; coriander are on us!</string>
     <string name="S_PREFS">FarConPrefFile</string>
 
     <string name="deopa">http://192.168.0.19/FarCon/public/</string>
-    <string name="local_host">http://192.168.0.15/</string>
+    <string name="local_host">http://api.farcon.in/</string>
     <string name="local_host_web">http://admin.farcon.in</string>
     <string name="server">http://api.farcon.in/</string>
     <string name="server_web">http://admin.farcon.in</string>
@@ -36,7 +36,7 @@
     <string name="get_items">item</string>
     <string name="add_cart">addcart</string>
     <string name="success_feed">Thank you for your valuable feedback!</string>
-    <string name="share_msg">http://www.farcon.in/download/FarCon.apk Click this link, use my FarCon invite code and get surprise gift on your first order. My Referral Code:</string>
+    <string name="share_msg">http://www.farcon.in/download Click this link, use my FarCon invite code and get surprise gift on your first order. My Referral Code:</string>
     <string name="share_through">Share the link using?</string>
     <string name="left_empty">Can\'t be left empty!</string>
     <string name="rewarded">You and your friend have got surprise in your basket!</string>

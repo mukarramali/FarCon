@@ -31,7 +31,7 @@ public class ConfirmActivity extends AppCompatActivity {
         TextView tv1= (TextView) findViewById(R.id.tv1);
         try {
             String order_id = getIntent().getExtras().getString("order_id");
-            tv1.setText(getString(R.string.confirm_order) + "\nYour Order Id:" + order_id);
+            tv1.setText(getString(R.string.confirm_order) + "\nYour Order Id " + order_id);
         }catch (Exception e){
             e.printStackTrace();
         }

@@ -41,16 +41,16 @@ import java.util.ArrayList;
 //1 425 3 425 3
 public class RecyclerAdapterShop extends Adapter<RecyclerAdapterShop.ViewHolder> {
 
-    private Context mContext;
     JSONArray items;
     String[] item_id, item_name, item_cost, item_thumbnail, percent_off, min_qty;
     SharedPreferences sPrefs;
-    SharedPreferences.Editor editor;
-    private DBHelper mydb ;
+    //SharedPreferences.Editor editor;
     EditText etQuantity;
     String id, quantity;
     String _quantity, _qty0, _id, _cost;
     int _i;
+    private Context mContext;
+    private DBHelper mydb ;
     public RecyclerAdapterShop(Context context, JSONArray items) {
         mContext = context;
         this.items=items;
@@ -62,59 +62,23 @@ public class RecyclerAdapterShop extends Adapter<RecyclerAdapterShop.ViewHolder>
         percent_off=new String[items.length()];
         min_qty=new String[items.length()];
         sPrefs=context.getSharedPreferences(context.getString(R.string.S_PREFS), context.MODE_PRIVATE);
-        editor=sPrefs.edit();
+        //editor=sPrefs.edit();
         mydb = new DBHelper(context);
     }
-    // Not use static
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        int i=0;
-        @TargetApi(Build.VERSION_CODES.KITKAT)
-        public ViewHolder(final View itemView) {
-            super(itemView);
-            System.out.println("***4");
-            etQuantity=(EditText) itemView.findViewById(R.id.et_quantity);
-/*
-            itemView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // do something
-                    System.out.println("*3");
-                    i=getAdapterPosition();
-                    Intent intent=new Intent(mContext, ItemActivity.class);
-                    intent.putExtra("item_id", item_id[i]);
-                    intent.putExtra("item_name", item_name[i]);
-                    intent.putExtra("item_cost", item_cost[i]);
-                    mContext.startActivity(intent);
 
-                }
-            });
-
-  */
-
-
-            itemView.findViewById(R.id.bt_minus).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    i=getAdapterPosition();
-                    updateCart(i, itemView, -1);
-
-                }
-            });
-            itemView.findViewById(R.id.bt_plus).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    i=getAdapterPosition();
-                    updateCart(i, itemView, 1);
-
-                }
-            });
+public static void setAllParentsClip(View v, boolean enabled) {
+        while (v.getParent() != null && v.getParent() instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) v.getParent();
+            viewGroup.setClipChildren(enabled);
+            viewGroup.setClipToPadding(enabled);
+            v = viewGroup;
         }
     }
 
     private void makeVisible(View v, Boolean b) {
 
-        v.findViewById(R.id.bt_minus).setVisibility(b==true?View.VISIBLE:View.INVISIBLE);
-        v.findViewById(R.id.et_quantity).setVisibility(b==true?View.VISIBLE:View.INVISIBLE);
+        v.findViewById(R.id.bt_minus).setVisibility(b?View.VISIBLE:View.INVISIBLE);
+        v.findViewById(R.id.et_quantity).setVisibility(b?View.VISIBLE:View.INVISIBLE);
 
 
     }
@@ -129,7 +93,7 @@ public class RecyclerAdapterShop extends Adapter<RecyclerAdapterShop.ViewHolder>
         et.setText(qty+"");
 
 
-        makeVisible(itemView, qty==0?false:true);
+        makeVisible(itemView, qty!=0);
         printToast(qty);
         String id=item_id[i];
         _id=id;
@@ -177,9 +141,7 @@ public class RecyclerAdapterShop extends Adapter<RecyclerAdapterShop.ViewHolder>
                     mydb.updateItem(_id, _cost,_quantity);
                     new Utilities().checkIfLogged(output, mContext);
                 }
-                else {
-                    //n+" Item \nTotal: Rs."+cost
-                }
+
             }
         }).execute();
 
@@ -255,21 +217,11 @@ public class RecyclerAdapterShop extends Adapter<RecyclerAdapterShop.ViewHolder>
         setAllParentsClip(image, false);
     }
 
-
-    public static void setAllParentsClip(View v, boolean enabled) {
-        while (v.getParent() != null && v.getParent() instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) v.getParent();
-            viewGroup.setClipChildren(enabled);
-            viewGroup.setClipToPadding(enabled);
-            v = viewGroup;
-        }
-    }    @Override
+@Override
     public int getItemCount() {
         //      return shop.size();
         return items.length();
     }
-
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
@@ -294,7 +246,7 @@ public class RecyclerAdapterShop extends Adapter<RecyclerAdapterShop.ViewHolder>
             item_cost[i]=item.optString("item_cost")+"";
             item_thumbnail[i]=item.optString("thumbnail")+"";
             percent_off[i]=item.optInt("percent_off")+"";
-            min_qty[i]=item.optInt("min_qty")+"";
+            min_qty[i]=item.optInt("item_min_qty")+"";
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -304,7 +256,7 @@ public class RecyclerAdapterShop extends Adapter<RecyclerAdapterShop.ViewHolder>
 
 
         TextView item_costTv= (TextView) holder.itemView.findViewById(R.id.tv_price);
-        item_costTv.setText(item_cost[i]+"/Kg");
+        item_costTv.setText("Rs."+item_cost[i]+"/Kg");
 
         TextView item_offerTv = (TextView) holder.itemView.findViewById(R.id.tv_offer);
 
@@ -325,6 +277,63 @@ public class RecyclerAdapterShop extends Adapter<RecyclerAdapterShop.ViewHolder>
         DownloadImage downloadImage=new DownloadImage(image);
         downloadImage.execute(url);
     }
+
+    private String capitalize(String name) {
+        String st=name;
+        if (name.length()==0)
+            return name;
+        if(name.charAt(0)>'Z'){
+            st=(char)(name.charAt(0)-('a'-'A'))+name.substring(1);
+        }
+        return st;
+    }
+
+    // Not use static
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        int i=0;
+        @TargetApi(Build.VERSION_CODES.KITKAT)
+        public ViewHolder(final View itemView) {
+            super(itemView);
+            System.out.println("***4");
+            etQuantity=(EditText) itemView.findViewById(R.id.et_quantity);
+/*
+            itemView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // do something
+                    System.out.println("*3");
+                    i=getAdapterPosition();
+                    Intent intent=new Intent(mContext, ItemActivity.class);
+                    intent.putExtra("item_id", item_id[i]);
+                    intent.putExtra("item_name", item_name[i]);
+                    intent.putExtra("item_cost", item_cost[i]);
+                    mContext.startActivity(intent);
+
+                }
+            });
+
+  */
+
+
+            itemView.findViewById(R.id.bt_minus).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    i=getAdapterPosition();
+                    updateCart(i, itemView, -1);
+
+                }
+            });
+            itemView.findViewById(R.id.bt_plus).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    i=getAdapterPosition();
+                    updateCart(i, itemView, 1);
+
+                }
+            });
+        }
+    }
+
     class DownloadImage extends AsyncTask<String, Void, Bitmap> {
         ImageView im;
 
@@ -359,15 +368,6 @@ public class RecyclerAdapterShop extends Adapter<RecyclerAdapterShop.ViewHolder>
                 im.setImageBitmap(bitmap);
 
         }
-    }
-    private String capitalize(String name) {
-        String st=name;
-        if (name.length()==0)
-            return name;
-        if(name.charAt(0)>'Z'){
-            st=(char)(name.charAt(0)-('a'-'A'))+name.substring(1);
-        }
-        return st;
     }
 
 }

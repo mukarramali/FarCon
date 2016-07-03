@@ -12,5 +12,6 @@
         android:id="@+id/recycler_shop"
         android:clipToPadding="false"
         android:clipChildren="false"
+        android:paddingBottom="80dp"
         ></android.support.v7.widget.RecyclerView>
 </RelativeLayout>

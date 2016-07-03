@@ -36,6 +36,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "create table if not exists "+ITEMS_TABLE_NAME +" " +
                         "(item_id integer primary key, item_name text,item_cost text,item_qty text)"
         );
+//add field type_flag
     }
 
     @Override
@@ -45,6 +46,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "create table "+ITEMS_TABLE_NAME +" " +
                         "(item_id integer primary key, item_name text,item_cost text,item_qty text)"
         );
+//add field type_flag
     }
 
     @Override
@@ -62,6 +64,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("item_cost", cost);
         contentValues.put("item_qty", quantity);
         contentValues.put("item_id", id);
+//add field type_flag
         db.insert(ITEMS_TABLE_NAME , null, contentValues);
         System.out.println("Inserted id:"+id);
         return true;
@@ -72,7 +75,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         return (int) DatabaseUtils.queryNumEntries(db, ITEMS_TABLE_NAME);
     }
-
+//type_flag
     public boolean updateItem (String id, String cost, String quantity)
     {
         SQLiteDatabase db = this.getWritableDatabase();

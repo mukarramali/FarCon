@@ -3,94 +3,94 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp"
     android:background="@color/light_grey"
+    android:clipChildren="false"
     android:clipToPadding="false"
-    android:clipChildren="false">
+    android:padding="5dp">
     <RelativeLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="5dp"
-        android:background="@drawable/white">
+        android:background="@drawable/white"
+        android:elevation="5dp">
 
 
         <prashushi.farcon.CircularImageView
+            android:id="@+id/im_thumb"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:id="@+id/im_thumb"
-            android:src="@drawable/onion"
-            android:elevation="10dp"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:layout_centerVertical="true"/>
+            android:elevation="10dp"
+            android:src="@drawable/onion"/>
         <TextView
+            android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="110dp"
             android:text="@string/item_name"
-            android:id="@+id/tv_name"
-            android:textStyle="bold"
-            android:textSize="20dp"/>
+            android:textSize="20dp"
+            android:textStyle="bold"/>
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/item_price"
             android:id="@+id/tv_price"
-            android:layout_below="@+id/tv_name"
-            android:layout_alignLeft="@+id/tv_content"
-            android:layout_alignStart="@+id/tv_content" />
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_content"
+            android:layout_alignStart="@+id/tv_content"
+            android:layout_below="@+id/tv_name"
+            android:text="@string/item_price" />
+        <TextView
             android:id="@+id/tv_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/tv_price"
             android:layout_marginLeft="120dp"
             android:layout_marginTop="5dp"
             />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="120dp"
-            android:text="Offer"
             android:id="@+id/tv_offer"
-            android:layout_marginBottom="10dp"
-
-            android:layout_below="@id/tv_content"/>
-
-        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_content"
-            android:orientation="horizontal"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
-            android:id="@+id/layout_count">
+            android:layout_marginLeft="120dp"
+
+            android:text=""/>
+
+        <LinearLayout
+            android:id="@+id/layout_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/tv_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal">
             <Button
+                android:id="@+id/bt_minus"
+                style="@style/MyButton"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                style="@style/MyButton"
                 android:background="@drawable/minus_square"
-                android:id="@+id/bt_minus"
                 android:visibility="invisible"/>
             <EditText
+                android:id="@+id/et_quantity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLength="2"
-                android:text="0"
-                android:padding="3dp"
-                android:background="@drawable/box_blank"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="2dp"
-                android:id="@+id/et_quantity"
+                android:background="@drawable/box_blank"
+                android:inputType="number"
+                android:maxLength="2"
+                android:padding="3dp"
+                android:text="0"
                 android:visibility="invisible"/>
             <Button
+                android:id="@+id/bt_plus"
+                style="@style/MyButton"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:background="@drawable/plus_square"
-                style="@style/MyButton"
-                android:id="@+id/bt_plus"/>
+                android:background="@drawable/plus_square"/>
         </LinearLayout>
     </RelativeLayout>
 

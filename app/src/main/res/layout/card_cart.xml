@@ -6,86 +6,98 @@
 
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/item_name"
         android:id="@+id/tv_name"
-        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:textSize="20dp"/>
+        android:text="@string/item_name"
+        android:textSize="20dp"
+        android:textStyle="bold"/>
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
         android:id="@+id/tv_price"
-        android:layout_below="@id/tv_name"
-
-        android:layout_margin="10dp"/>
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:layout_alignParentRight="true"
+        android:layout_below="@id/tv_name"
+        android:layout_margin="10dp"
+
+        android:text=""/>
+
+    <TextView
         android:id="@+id/tv_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
         android:layout_below="@id/tv_name"
         android:layout_marginRight="20dp"
-        android:textSize="20dp"/>
+        android:text=""
+        android:textSize="14dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:layout_alignParentRight="true"
+        android:layout_below="@id/tv_name"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@id/tv_total"
+        android:text="Price:"
+        android:textSize="13dp"/>
+
+
+    <TextView
         android:id="@+id/tv_total2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
         android:layout_below="@id/tv_total"
         android:layout_marginRight="20dp"
-        android:textSize="20dp"/>
+        android:text=""
+        android:textColor="@color/colorPrimary"
+        android:textSize="16dp"/>
+
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="20dp"
         android:layout_below="@id/tv_name"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
         android:layout_toRightOf="@id/tv_price"
-        android:id="@+id/linearLayout">
+        android:orientation="horizontal">
         <Button
+            android:id="@+id/bt_minus"
+            style="@style/MyButton"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            style="@style/MyButton"
-            android:background="@drawable/minus_square"
-            android:id="@+id/bt_minus"/>
+            android:background="@drawable/minus_square"/>
         <TextView
+            android:id="@+id/et_quantity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:text="1"
-            android:padding="3dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginTop="2dp"
-            android:id="@+id/et_quantity"/>
+            android:inputType="number"
+            android:padding="3dp"
+            android:text="1"/>
         <Button
+            android:id="@+id/bt_plus"
+            style="@style/MyButton"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:background="@drawable/plus_square"
-            style="@style/MyButton"
-            android:id="@+id/bt_plus"/>
+            android:background="@drawable/plus_square"/>
 
     </LinearLayout>
     <Button
+        android:id="@+id/bt_delete"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:background="@drawable/delete"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="1dp"
         android:layout_marginTop="1dp"
-        android:layout_alignParentRight="true"
-        android:id="@+id/bt_delete"/>
+        android:background="@drawable/delete"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/grey"
+        android:layout_below="@id/linearLayout"
         android:layout_marginTop="10dp"
-        android:layout_below="@id/linearLayout"/>
+        android:background="@color/grey"/>
 </RelativeLayout>

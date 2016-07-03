@@ -12,13 +12,17 @@
     <item android:title="Communicate">
         <menu>
             <item
-                android:id="@+id/nav_referral"
-                android:icon="@drawable/share"
-                android:title="Share" />
-            <item
                 android:id="@+id/nav_feedback"
                 android:icon="@drawable/feedback"
                 android:title="Feedback" />
+            <item
+                android:id="@+id/nav_referral"
+                android:icon="@drawable/share"
+                android:title="Refer &amp; Earn" />
+            <item
+                android:id="@+id/nav_visit"
+                android:icon="@drawable/visit"
+                android:title="Visit our Website" />
         </menu>
     </item>
 

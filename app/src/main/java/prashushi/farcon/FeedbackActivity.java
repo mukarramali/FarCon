@@ -17,18 +17,18 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class FeedbackActivity extends AppCompatActivity implements View.OnClickListener {
+public class FeedbackActivity extends Activity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Feedback");
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+  //      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        //setSupportActionBar(toolbar);
+        //getSupportActionBar().setTitle("Feedback");
+        //getSupportActionBar().setHomeButtonEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         findViewById(R.id.tv_cancel).setOnClickListener(this);
         findViewById(R.id.tv_send).setOnClickListener(this);
 

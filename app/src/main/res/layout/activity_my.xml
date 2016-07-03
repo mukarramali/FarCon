@@ -1,0 +1,44 @@
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:text="You are at:"
+        android:textSize="25dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/lblLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="15dp"
+        android:textSize="16dp" />
+
+    <Button
+        android:id="@+id/btnShowLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="Get Location" />
+
+    <TextView
+        android:id="@+id/tv_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="15dp"
+        android:textSize="16dp"
+        android:text="Nothing yet"/>
+
+</LinearLayout>

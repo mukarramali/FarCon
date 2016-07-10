@@ -25,7 +25,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class WelcomeActivity extends AppCompatActivity {
+public class WelcomeActivity extends AppCompatActivity{
 
     String number;
     SharedPreferences sPrefs;
@@ -156,5 +156,6 @@ public class WelcomeActivity extends AppCompatActivity {
 
         return super.onKeyUp(keyCode, event);
     }
+
 
 }

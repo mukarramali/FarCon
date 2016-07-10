@@ -43,7 +43,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener , KeyEvent.Callback, ViewPager.OnPageChangeListener {
+        implements NavigationView.OnNavigationItemSelectedListener , KeyEvent.Callback, ViewPager.OnPageChangeListener, ListPackageDialog.OnCompleteListener {
 
     ViewPager viewPager;
     TabsPagerAdapter mAdapter;
@@ -213,13 +213,11 @@ public class HomeActivity extends AppCompatActivity
 
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getSupportActionBar();
-
         mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
-
-
 
         viewPager.setAdapter(mAdapter);
         viewPager.addOnPageChangeListener(this);
+        viewPager.setOffscreenPageLimit(mAdapter.getCount()-1);
         actionBar.setHomeButtonEnabled(false);
 
 
@@ -373,6 +371,30 @@ public class HomeActivity extends AppCompatActivity
     public void onPageScrollStateChanged(int state) {
 
     }
+
+    @Override
+    public void onComplete(String id, String size, String price, int pos) {
+        System.out.println("in home activity");
+        View v=shop.recyclerview_shop.findViewHolderForLayoutPosition(pos).itemView;
+    printSizePrice(v, price, size);
+    }
+    private void printSizePrice(View clickedItem, String price1, String size1) {
+        TextView item_costTv= (TextView) clickedItem.findViewById(R.id.tv_price);
+        item_costTv.setText(price1+" "+getResources().getString(R.string.Rs));
+
+        TextView item_sizeTv= (TextView) clickedItem.findViewById(R.id.tv_spinner);
+        item_sizeTv.setText(getSizeTag(Double.valueOf(size1)));
+    }
+    private String getSizeTag(Double size_d) {
+        String tag="Kg";
+        if(size_d<1.0)
+        {
+            size_d*=1000;
+            tag="grams";
+        }
+        return size_d+" "+tag;
+    }
+
 
 
     class TabsPagerAdapter extends FragmentPagerAdapter {

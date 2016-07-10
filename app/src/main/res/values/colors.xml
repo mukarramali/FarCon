@@ -11,4 +11,5 @@
     <color name="transparent">#0000</color>
     <color name="red">#ed1c24</color>
     <color name="grey_back">#d1d3d4</color>
+    <color name="grey_icons">#cccccc</color>
 </resources>

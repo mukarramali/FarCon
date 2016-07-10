@@ -46,6 +46,8 @@ public class ShopFragment extends Fragment {
             @Override
             public void processFinish(String output) {
 
+                output="[{\"id\":1,\"item_name\":\"gtf\",\"image\":\"\",\"thumbnail\":\"\",\"item_min_qty\":2,\"percent_off\":10,\"item_id\":1,\"terms\":\"dfghs\",\n" +
+                        "\"package\":[{\"id\":1,\"item_id\":1,\"package_qty\":2,\"item_package_id\":1,\"item_cost\":12},{\"id\":2,\"item_id\":1,\"package_qty\":123,\"item_package_id\":2,\"item_cost\":109}]}]";
                 if(output.contains("falsexxx"))
                 {
                     Toast.makeText(getActivity(), "Something went wrong. Try again.", Toast.LENGTH_LONG).show();
@@ -54,7 +56,7 @@ public class ShopFragment extends Fragment {
                 try {
                     jsonArray = new JSONArray(output);
                     System.out.println(output);
-                    final RecyclerAdapterShop adapter=new RecyclerAdapterShop(getActivity(), jsonArray);
+                    final RecyclerAdapterShop adapter=new RecyclerAdapterShop(getActivity(), getActivity().getSupportFragmentManager(),jsonArray);
                     recyclerview_shop.setAdapter(adapter);
                 } catch (JSONException e) {
 

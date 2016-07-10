@@ -5,7 +5,9 @@ package prashushi.farcon;
  */
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +15,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
@@ -39,20 +42,24 @@ import java.net.URL;
 import java.util.ArrayList;
 
 //1 425 3 425 3
-public class RecyclerAdapterShop extends Adapter<RecyclerAdapterShop.ViewHolder> {
+public class RecyclerAdapterShop extends Adapter<RecyclerAdapterShop.ViewHolder> implements ListPackageDialog.OnCompleteListener{
 
     JSONArray items;
-    String[] item_id, item_name, item_cost, item_thumbnail, percent_off, min_qty;
+    String[] item_id, item_name, item_cost, item_thumbnail, percent_off, min_qty, item_pkg_qty;
+    JSONArray[] item_package;
     SharedPreferences sPrefs;
     //SharedPreferences.Editor editor;
     EditText etQuantity;
     String id, quantity;
     String _quantity, _qty0, _id, _cost;
     int _i;
+    View clickedItem;
     private Context mContext;
+    FragmentManager fragmentManager;
     private DBHelper mydb ;
-    public RecyclerAdapterShop(Context context, JSONArray items) {
+    public RecyclerAdapterShop(Context context, FragmentManager fragmentManager, JSONArray items) {
         mContext = context;
+        this.fragmentManager=fragmentManager;
         this.items=items;
         System.out.println("***");
         item_id=new String[items.length()];
@@ -61,19 +68,14 @@ public class RecyclerAdapterShop extends Adapter<RecyclerAdapterShop.ViewHolder>
         item_cost=new String[items.length()];
         percent_off=new String[items.length()];
         min_qty=new String[items.length()];
+        item_package=new JSONArray[items.length()];
+        item_pkg_qty=new String[items.length()];
+
         sPrefs=context.getSharedPreferences(context.getString(R.string.S_PREFS), context.MODE_PRIVATE);
         //editor=sPrefs.edit();
         mydb = new DBHelper(context);
     }
 
-public static void setAllParentsClip(View v, boolean enabled) {
-        while (v.getParent() != null && v.getParent() instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) v.getParent();
-            viewGroup.setClipChildren(enabled);
-            viewGroup.setClipToPadding(enabled);
-            v = viewGroup;
-        }
-    }
 
     private void makeVisible(View v, Boolean b) {
 
@@ -162,60 +164,7 @@ public static void setAllParentsClip(View v, boolean enabled) {
     }
 
 
-    private void createAnimation(View itemView) {
-        System.out.println("Animation");
-        int[] curr=new int[2];
-        ImageView image= (ImageView) itemView.findViewById(R.id.im_thumb);
 
-        image.getLocationOnScreen(curr);
-        float startX = curr[0];
-        float startY = curr[1];
-        Button add= (Button) itemView.findViewById(R.id.bt_add);
-        int toLoc[] = new int[2];
-        add.getLocationOnScreen(toLoc);
-        float destX = toLoc[0];
-        float destY = toLoc[1];
-        Animation.AnimationListener animL = new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                //this is just a method call you can create to delete the animated view or hide it until you need it again.
-                //clearAnimation();
-            }
-        };
-/*
-//1st
-        Animations anim = new Animations();
-        Animation a = anim.fromAtoB(startX, startY, destX, destY, animL,850);
-        image.setAnimation(a);
-        a.startNow();
-*/
-//3rd
-
-        AnimationSet animationSet = new AnimationSet(true);
-
-        TranslateAnimation ta = new TranslateAnimation(
-                Animation.RELATIVE_TO_SELF,0, Animation.INFINITE,400,
-                Animation.RELATIVE_TO_SELF,0, Animation.INFINITE,-100);
-        ta.setDuration(1000);
-        animationSet.addAnimation(ta);
-
-        image.startAnimation(animationSet);
-
-//2nd
-       // Animation move = AnimationUtils.loadAnimation(mContext, R.anim.move_right);
-//        image.setAnimation(move_right);
-      //  image.startAnimation(move);
-        setAllParentsClip(image, false);
-    }
 
 @Override
     public int getItemCount() {
@@ -225,8 +174,6 @@ public static void setAllParentsClip(View v, boolean enabled) {
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        System.out.println("***3");
-
         view = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.card_shop_simple, parent, false);
         ViewHolder holder = new ViewHolder(view);
@@ -241,12 +188,16 @@ public static void setAllParentsClip(View v, boolean enabled) {
         try {
             System.out.println(i);
             item=items.getJSONObject(i);
-            item_id[i]=item.optInt("item_id")+"";
             item_name[i]=capitalize(item.optString("item_name"))+"";
-            item_cost[i]=item.optString("item_cost")+"";
             item_thumbnail[i]=item.optString("thumbnail")+"";
             percent_off[i]=item.optInt("percent_off")+"";
             min_qty[i]=item.optInt("item_min_qty")+"";
+            item_package[i]=item.optJSONArray("package");
+            JSONObject first=getPackageAt(0, item_package[i]);
+            item_id[i]=first.optInt("id")+"";
+            item_cost[i]=first.optString("item_cost")+"";
+            item_pkg_qty[i]=first.optString("package_qty")+"";
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -255,8 +206,7 @@ public static void setAllParentsClip(View v, boolean enabled) {
         name.setText(item_name[i]);
 
 
-        TextView item_costTv= (TextView) holder.itemView.findViewById(R.id.tv_price);
-        item_costTv.setText("Rs."+item_cost[i]+"/Kg");
+        printSizePrice(holder.itemView, item_cost[i], item_pkg_qty[i]);
 
         TextView item_offerTv = (TextView) holder.itemView.findViewById(R.id.tv_offer);
 
@@ -271,23 +221,44 @@ public static void setAllParentsClip(View v, boolean enabled) {
         setImage(image, item_thumbnail[position]);
     }
 
-    private void setImage(ImageView image, String s) {
-
-        String url=mContext.getString(R.string.local_host_web)+s;
-        DownloadImage downloadImage=new DownloadImage(image);
-        downloadImage.execute(url);
-    }
-
-    private String capitalize(String name) {
-        String st=name;
-        if (name.length()==0)
-            return name;
-        if(name.charAt(0)>'Z'){
-            st=(char)(name.charAt(0)-('a'-'A'))+name.substring(1);
+    private JSONObject getPackageAt(int i, JSONArray jsonArray) {
+        JSONObject obj=new JSONObject();
+        try {
+           obj=jsonArray.getJSONObject(i);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        return st;
+        return obj;
     }
 
+
+    @Override
+    public void onComplete(String id1, String size1, String price1, int pos) {
+        item_id[pos]=id1;
+        item_cost[pos]=price1;
+        item_pkg_qty[pos]=size1;
+
+        printSizePrice(clickedItem, price1, size1);
+        System.out.println("in recycler");
+    }
+
+    private void printSizePrice(View clickedItem, String price1, String size1) {
+        TextView item_costTv= (TextView) clickedItem.findViewById(R.id.tv_price);
+        item_costTv.setText(price1+" "+mContext.getResources().getString(R.string.Rs));
+
+        TextView item_sizeTv= (TextView) clickedItem.findViewById(R.id.tv_spinner);
+        item_sizeTv.setText(getSizeTag(Double.valueOf(size1)));
+    }
+
+    private String getSizeTag(Double size_d) {
+        String tag="Kg";
+        if(size_d<1.0)
+        {
+            size_d*=1000;
+            tag="grams";
+        }
+        return size_d+" "+tag;
+    }
     // Not use static
     public class ViewHolder extends RecyclerView.ViewHolder {
         int i=0;
@@ -296,24 +267,26 @@ public static void setAllParentsClip(View v, boolean enabled) {
             super(itemView);
             System.out.println("***4");
             etQuantity=(EditText) itemView.findViewById(R.id.et_quantity);
-/*
-            itemView.setOnClickListener(new OnClickListener() {
+
+
+            itemView.findViewById(R.id.spinner).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // do something
-                    System.out.println("*3");
-                    i=getAdapterPosition();
-                    Intent intent=new Intent(mContext, ItemActivity.class);
-                    intent.putExtra("item_id", item_id[i]);
-                    intent.putExtra("item_name", item_name[i]);
-                    intent.putExtra("item_cost", item_cost[i]);
-                    mContext.startActivity(intent);
-
+                    ArrayList<String> size, price, id;
+                    size=new ArrayList<String>();
+                    price=new ArrayList<String>();
+                    id=new ArrayList<String>();
+                    for(int i=0;i<item_package[getAdapterPosition()].length();i++){
+                        JSONObject temp=getPackageAt(i, item_package[getAdapterPosition()]);
+                        size.add(temp.optString("package_qty"));
+                        id.add(temp.optInt("id")+"");
+                        price.add(temp.optString("item_cost")+"");
+                    }
+                    ListPackageDialog listPackageDialog=ListPackageDialog.newInstance(id, size, price, getAdapterPosition(), item_id, item_cost, item_pkg_qty);
+                    listPackageDialog.show(fragmentManager, null);
+                    clickedItem=v;
                 }
             });
-
-  */
-
 
             itemView.findViewById(R.id.bt_minus).setOnClickListener(new OnClickListener() {
                 @Override
@@ -331,7 +304,37 @@ public static void setAllParentsClip(View v, boolean enabled) {
 
                 }
             });
-        }
+
+            itemView.findViewById(R.id.mark).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    i=getAdapterPosition();
+                    Intent intent=new Intent(mContext,DialogMarkPrice.class);
+                    intent.putExtra("id", item_id[i]);
+                    intent.putExtra("cost", item_cost[i]);
+                    intent.putExtra("size", item_pkg_qty[i]);
+                    mContext.startActivity(intent);
+
+                }
+            });
+
+ /*
+            itemView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // do something
+                    System.out.println("*3");
+                    i=getAdapterPosition();
+                    Intent intent=new Intent(mContext, ItemActivity.class);
+                    intent.putExtra("item_id", item_id[i]);
+                    intent.putExtra("item_name", item_name[i]);
+                    intent.putExtra("item_cost", item_cost[i]);
+                    mContext.startActivity(intent);
+
+                }
+            });
+
+  */       }
     }
 
     class DownloadImage extends AsyncTask<String, Void, Bitmap> {
@@ -368,6 +371,23 @@ public static void setAllParentsClip(View v, boolean enabled) {
                 im.setImageBitmap(bitmap);
 
         }
+    }
+
+    private void setImage(ImageView image, String s) {
+
+        String url=mContext.getString(R.string.local_host_web)+s;
+        DownloadImage downloadImage=new DownloadImage(image);
+        downloadImage.execute(url);
+    }
+
+    private String capitalize(String name) {
+        String st=name;
+        if (name.length()==0)
+            return name;
+        if(name.charAt(0)>'Z'){
+            st=(char)(name.charAt(0)-('a'-'A'))+name.substring(1);
+        }
+        return st;
     }
 
 }

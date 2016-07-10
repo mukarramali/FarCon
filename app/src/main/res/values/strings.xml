@@ -44,4 +44,6 @@
     <string name="re_enter">Re Enter</string>
     <string name="re_enter_num">Re-enter your number?</string>
     <string name="login_again">Your session has expired, login again!</string>
+    <string name="choose_pack">Choose Pack</string>
+    <string name="Rs">\u20B9</string>
 </resources>

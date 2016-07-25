@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey_back"
+    android:background="@color/light_grey"
     tools:context="prashushi.farcon.AddressActivity">
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -77,11 +77,16 @@
 
 -->
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Use My Location"
             android:textColor="@color/white"
-            android:id="@+id/bt_loc"/>
+            android:id="@+id/bt_loc"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/button"
+            style="@style/MyButton" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -150,7 +155,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CheckOut"
+        android:text="CHECKOUT"
         android:id="@+id/tv_order"
         android:textColor="@color/white"
         android:layout_alignParentBottom="true"

@@ -38,6 +38,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
     EditText et;
     String number = "";
     Button bt_verify;
+    Boolean _isNew;
     BroadcastReceiver broadcastReceiver=new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -83,8 +84,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
         String otp1 = sPrefs.getString("otp", "");
         System.out.println("Saved otp:" + otp1);
         System.out.println("Entered otp:" + otp);
-        if (otp.compareTo(otp1)==0)
-        { askReferral();
+        if (otp.compareTo(otp1) == 0) {
 //            unregisterReceiver(broadcast_receiver);
         return true;
         }
@@ -95,14 +95,26 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
     }
 
 
-    private void askReferral() {
+    private void askReferral(Boolean temp) {
+        _isNew = temp;
         String id = sPrefs.getString("id", "0");
         if (id.compareTo("0")==0) {
             errorRestart();
             return;
         }
-        String url = getString(R.string.local_host) + "generate_referal/" + id; //{"referal_code"="1235"}
-        new BackgroundTaskLoad(url, this,new ArrayList<String>(), new ArrayList<String>(), new BackgroundTaskLoad.AsyncResponse() {
+        String url = getString(R.string.local_host) + "generate_referal"; //{"referal_code"="1235"}
+
+
+        ArrayList<String> params = new ArrayList<>();
+        ArrayList<String> values = new ArrayList<>();
+//9808185808    8958050840
+        params.add("id");
+        values.add(id);
+        params.add("access_token");
+        values.add(sPrefs.getString("access_token", "0"));
+
+
+        new BackgroundTaskPost(this, url, params, values, new BackgroundTaskPost.AsyncResponse() {
             @Override
             public void processFinish(String output) {
                 if (output.contains("falsexxx")) {
@@ -118,6 +130,17 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
                     editor.commit();
                     //startActivity(new Intent(OTPActivity.this, ReferralActivity.class));
                    // finish();
+                    if (_isNew) {
+                        startActivity(new Intent(OTPActivity.this, ReferralActivity.class));
+                        finish();
+                        overridePendingTransition(R.anim.left_in, R.anim.left_out);
+                    } else {
+                        Intent intent = new Intent(OTPActivity.this, HomeActivity.class);
+                        intent.putExtra("update", true);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);
+                        finish();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -162,7 +185,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
                 params.add("client_secret");
                 values.add("user_password");
 
-                new BackgroundTaskPost(url, params, values, new BackgroundTaskPost.AsyncResponse() {
+                new BackgroundTaskPost(this, url, params, values, new BackgroundTaskPost.AsyncResponse() {
                     @Override
                     public void processFinish(String output) {
                         if(!output.contains("falsexxx")) {
@@ -178,15 +201,7 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
                             editor.putString("access_token", access_token);
                             editor.putBoolean("logged", true);
                             editor.commit();
-                            if (isNew) {
-                                startActivity(new Intent(OTPActivity.this, ReferralActivity.class));
-                                finish();
-                                overridePendingTransition(R.anim.left_in, R.anim.left_out);
-                            } else {
-                                startActivity(new Intent(OTPActivity.this, HomeActivity.class));
-                                overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);
-                                finish();
-                            }
+                            askReferral(isNew);
 
                         }
 
@@ -211,8 +226,15 @@ public class OTPActivity extends AppCompatActivity implements View.OnClickListen
 
     public void askOTP(String num) {   //change in welcomeActivity too
         number = num;
-        String url = getString(R.string.local_host) + "phone/" + number;
-        new BackgroundTaskLoad(url,this, new ArrayList<String>(), new ArrayList<String>(), new BackgroundTaskLoad.AsyncResponse() {
+        String url = getString(R.string.local_host) + "phone";
+        ArrayList<String> params = new ArrayList<>();
+        ArrayList<String> values = new ArrayList<>();
+//9808185808    8958050840
+        params.add("phoneno");
+        values.add(num);
+        params.add("token");
+        values.add("qwerty12345");
+        new BackgroundTaskPost(this, url, params, values, new BackgroundTaskPost.AsyncResponse() {
             @Override
             public void processFinish(String output) {
                 if (output.contains("falsexxx")) {

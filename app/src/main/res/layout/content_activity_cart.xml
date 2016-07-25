@@ -6,8 +6,17 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".CartActivity"
-    tools:showIn="@layout/activity_cart">
-<ScrollView
+    tools:showIn="@layout/activity_cart"
+    android:background="@color/card_back">
+
+    <com.victor.loading.newton.NewtonCradleLoading
+        android:id="@+id/newton_cradle_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:layout_centerInParent="true"
+        android:visibility="invisible" />
+
+    <ScrollView
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 <LinearLayout
@@ -18,8 +27,9 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_cart"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        ></android.support.v7.widget.RecyclerView>
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
     <RelativeLayout
         android:id="@+id/promo_container"
         android:layout_width="match_parent"
@@ -65,11 +75,11 @@
 
 
     <RelativeLayout
-    android:id="@+id/sumary_container"
-    android:layout_width="match_parent"
+        android:id="@+id/sumary_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimary"
+        android:layout_alignParentBottom="true"
+        android:background="@color/green"
     >
     <Button
         style="@style/MyButton"
@@ -81,66 +91,58 @@
         android:id="@+id/tv_buy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="10dp"
-        android:text="Proceed"
+        android:layout_centerInParent="true"
+        android:text="PROCEED TO CHECKOUT"
         android:textColor="@color/white"
-        android:textSize="20dp"
-        android:textStyle="bold"
+        android:textSize="18dp"
         />
-        <TextView
-            android:id="@+id/tv_cart_summary2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:text="Empty Cart"
-            android:textColor="@color/white"
-            android:textSize="16dp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/tv_cart_summary2"
-            android:text="(Amount Payable)"
-            android:textColor="@color/white"
-            android:textSize="10dp"/>
 </RelativeLayout>
-    <RelativeLayout
+
+    <LinearLayout
         android:id="@+id/discount_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/sumary_container"
-        android:background="@color/greydark"
+        android:background="@color/light_grey"
         android:orientation="horizontal"
+        android:weightSum="3"
         >
         <TextView
             android:id="@+id/tv_total_actual"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
             android:paddingBottom="5dp"
             android:paddingTop="5dp"
             android:text="SubTotal"
-            android:textColor="@color/white"
+            android:textColor="@color/grey"
+            android:textAlignment="center"
             />
         <TextView
             android:id="@+id/tv_discount"
-            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
             android:paddingBottom="5dp"
             android:paddingTop="5dp"
-            android:text="Discount"
-            android:layout_alignParentRight="true"
-            android:textColor="@color/white"
+            android:text=""
+            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
             android:textSize="16dp"/>
-    </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_cart_summary2"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Empty Cart"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:layout_alignParentRight="true"
+            android:textAlignment="center"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
 
 </RelativeLayout>

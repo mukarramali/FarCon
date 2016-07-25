@@ -70,11 +70,12 @@ public class DialogMarkPrice extends Activity implements View.OnClickListener {
                 params.add("item_package_id");
                 values.add(getIntent().getExtras().getString("id"));
                 params.add("price");
-                values.add(getIntent().getExtras().getString("price"));
+                values.add(getIntent().getExtras().getString("cost"));
                 params.add("access_token");
                 values.add(sPrefs.getString("access_token", "0"));
+//                System.out.println("Received id:"+getIntent().getExtras().getString("id"));
 
-                new BackgroundTaskPost(url, params, values, new BackgroundTaskPost.AsyncResponse() {
+                new BackgroundTaskPost(this, url, params, values, new BackgroundTaskPost.AsyncResponse() {
                     @Override
                     public void processFinish(String output) {
                         if(output.contains("truexxx"))

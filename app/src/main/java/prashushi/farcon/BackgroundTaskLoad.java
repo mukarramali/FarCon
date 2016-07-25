@@ -6,9 +6,12 @@ package prashushi.farcon;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.view.LayoutInflater;
+import android.widget.Toast;
 
 import org.apache.http.client.ClientProtocolException;
 
@@ -22,13 +25,16 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 
+
 class BackgroundTaskLoad extends AsyncTask<Void, Void, Boolean> {
     public AsyncResponse delegate = null;
     String url="";
     ArrayList<String> params, values;
     String result="";
     Context activity;
-    ProgressDialog pDialog;
+    AlertDialog alertDialog;
+    ProgressDialog progressDialog;
+    ProgressDialog customProgressDialog;
     BackgroundTaskLoad(String url, Context activity, ArrayList<String> params, ArrayList<String> values, AsyncResponse delegate){
         this.url=url;
         this.params=params;
@@ -37,14 +43,17 @@ class BackgroundTaskLoad extends AsyncTask<Void, Void, Boolean> {
         this.activity=activity;
     }
 
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        pDialog = new ProgressDialog(activity);
-        pDialog.setMessage("Loading . Please wait...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(true);
-        pDialog.show();
+        progressDialog = new ProgressDialog(activity);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+//        alertDialog = new SpotsDialog(activity, R.style.Custom);
+        //      alertDialog.setCancelable(false);
+        //    alertDialog.show();
     }
 
 
@@ -60,6 +69,8 @@ class BackgroundTaskLoad extends AsyncTask<Void, Void, Boolean> {
             System.out.println(url);
             URL Url = new URL(url);
             URLConnection conn = Url.openConnection();
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line;// Read Server Response
             while ((line = reader.readLine()) != null) {
@@ -74,9 +85,20 @@ class BackgroundTaskLoad extends AsyncTask<Void, Void, Boolean> {
     }
 
     @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        Toast.makeText(activity, activity.getString(R.string.no_connection), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
     protected void onPostExecute(Boolean aBoolean) {
-        if(pDialog!=null)
-        pDialog.dismiss();
+        //   if (alertDialog != null)
+        //     alertDialog.dismiss();
+        if (progressDialog != null)
+            progressDialog.dismiss();
+//        if(customProgressDialog!=null)
+        //          customProgressDialog.dismiss();
+
         System.out.println(result);
         delegate.processFinish(result);
     }

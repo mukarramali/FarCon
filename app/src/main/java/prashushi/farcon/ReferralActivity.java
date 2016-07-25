@@ -1,6 +1,7 @@
 package prashushi.farcon;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -41,7 +42,9 @@ public class ReferralActivity extends AppCompatActivity implements View.OnClickL
     }
 
     void gotoHome() {
-        startActivity(new Intent(ReferralActivity.this, HomeActivity.class));
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra("update", true);
+        startActivity(intent);
         finish();
         overridePendingTransition(R.anim.left_in, R.anim.left_out);
 
@@ -76,15 +79,31 @@ public class ReferralActivity extends AppCompatActivity implements View.OnClickL
             etReferral.setError(getString(R.string.left_empty));
             return;
         }
-        String url=getString(R.string.local_host)+"referal/"+getSharedPreferences(getString(R.string.S_PREFS), MODE_PRIVATE).getString("id", "0")+"/"+code;
-        new BackgroundTaskLoad(url, this,new ArrayList<String>(), new ArrayList<String>(), new BackgroundTaskLoad.AsyncResponse() {
+        //id, code
+        SharedPreferences sPrefs = getSharedPreferences(getString(R.string.S_PREFS), MODE_PRIVATE);
+        String url = getString(R.string.local_host) + "referal";
+        ArrayList<String> params = new ArrayList<>();
+        ArrayList<String> values = new ArrayList<>();
+//9808185808    8958050840
+        params.add("id");
+        values.add(sPrefs.getString("id", "0"));
+
+        params.add("code");
+        values.add(code);
+
+        params.add("access_token");
+        values.add(sPrefs.getString("access_token", "0"));
+
+        new BackgroundTaskPost(this, url, params, values, new BackgroundTaskPost.AsyncResponse() {
             @Override
             public void processFinish(String output) {
                 if(output.contains("truexxx")){
                     Toast.makeText(ReferralActivity.this, getString(R.string.rewarded), Toast.LENGTH_LONG).show();
                     tv_verify.setVisibility(View.INVISIBLE);
                     etReferral.setVisibility(View.INVISIBLE);
-                    startActivity(new Intent(ReferralActivity.this, HomeActivity.class));
+                    Intent intent = new Intent(ReferralActivity.this, HomeActivity.class);
+                    intent.putExtra("update", true);
+                    startActivity(intent);
                     finish();
                     overridePendingTransition(R.anim.left_in, R.anim.left_out);
 

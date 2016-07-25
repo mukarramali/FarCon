@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="prashushi.farcon">
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
-        android:name=".Application"
         android:allowBackup="true"
         android:icon="@drawable/icon_big"
         android:label="@string/app_name"
@@ -17,51 +20,71 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
-
-        <receiver android:name=".SmsReceiver"
-            android:enabled="true"
-            >
+        <receiver
+            android:name=".SmsReceiver"
+            android:enabled="true">
             <intent-filter android:priority="99999">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-        <activity
-            android:name=".HomeActivity"
-            android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".OTPActivity"/>
-        <activity android:name=".ConfirmActivity"
-            android:parentActivityName=".HomeActivity"/>
 
         <activity
             android:name=".WelcomeActivity"
-            android:label="@string/title_activity_activity_home"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".OTPActivity" />
+        <activity
+            android:name=".ConfirmActivity"
+            android:parentActivityName=".HomeActivity" />
+        <activity
+            android:name=".HomeActivity"
+            android:label="@string/app_name"
             android:theme="@style/MyMaterialTheme" />
         <activity
             android:name=".CartActivity"
             android:label="@string/action_cart"
             android:parentActivityName=".HomeActivity" />
-        <activity android:name=".AddressActivity"
+        <activity
+            android:name=".AddressActivity"
             android:parentActivityName=".CartActivity" />
-        <activity android:name=".ReferralActivity"
-            android:parentActivityName=".HomeActivity"/>
-         <activity android:name=".FeedbackActivity"
-             android:excludeFromRecents="true"
-             android:theme="@style/Theme.UserDialog"/>
-        <activity android:name=".ItemActivity"/>
-        <activity android:name=".QuoteFormActivity"
+        <activity
+            android:name=".ReferralActivity"
+            android:parentActivityName=".HomeActivity" />
+        <activity
+            android:name=".FeedbackActivity"
             android:excludeFromRecents="true"
-            android:theme="@style/Theme.UserDialog"/>
-        <activity android:name=".TempCartActivity"
+            android:theme="@style/Theme.UserDialog" />
+        <activity android:name=".ItemActivity" />
+        <activity
+            android:name=".QuoteFormActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.UserDialog" />
+        <activity
+            android:name=".TempCartActivity"
             android:parentActivityName=".CartActivity" />
-        <activity android:name=".DialogMarkPrice"
-            android:theme="@style/Theme.UserDialog"/>
+        <activity
+            android:name=".DialogMarkPrice"
+            android:theme="@style/Theme.UserDialog" />
+        <activity
+            android:name=".WalletActivity"
+            android:label="@string/title_activity_wallet"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/MyMaterialTheme" />
+        <activity
+            android:name=".DialogWalletOffers"
+            android:parentActivityName=".WalletActivity"
+            android:theme="@style/Theme.UserDialog" />
+        <activity
+            android:name=".DialogUpdate"
+            android:theme="@style/Theme.UserDialog" />
+        <activity
+            android:name=".MyOrdersActivity"
+            android:parentActivityName=".HomeActivity" />
+        <activity android:name=".OrderActivity" />
     </application>
 
 </manifest>

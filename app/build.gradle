@@ -4,13 +4,12 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
     useLibrary 'org.apache.http.legacy'
-
     defaultConfig {
         applicationId "prashushi.farcon"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "2.1"
     }
     buildTypes {
         release {
@@ -30,5 +29,5 @@ dependencies {
     //compile  'com.google.android.gms:play-services-identity:9.2.0'
     compile  'com.google.android.gms:play-services-location:9.2.0'
     //compile  'com.google.android.gms:play-services-maps:9.2.0'
-
+    compile 'com.victor:lib:1.0.4'
 }

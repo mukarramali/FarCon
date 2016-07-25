@@ -5,8 +5,17 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_cart"
-            android:icon="@drawable/cart"
+            android:icon="@drawable/basket_grey"
             android:title="Cart" />
+        <item
+            android:id="@+id/nav_wallet"
+            android:icon="@drawable/wallet_grey"
+            android:title="Smart Wallet" />
+        <item
+            android:id="@+id/nav_orders"
+            android:icon="@drawable/orders"
+            android:title="My Orders" />
+
     </group>
 
     <item android:title="Communicate">

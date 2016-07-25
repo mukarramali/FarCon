@@ -2,14 +2,24 @@
 <resources>
     <color name="colorPrimary">#F44336</color>
     <color name="colorPrimaryDark">#D32F2F</color>
-    <color name="colorAccent">#FF5252</color>
+    <color name="colorAccent">#F44336</color>
+    <!--#FF5252-->
     <color name="white">#fff</color>
     <color name="grey">#4000</color>
-    <color name="greydark">#8000</color>
+    <color name="greydark">#7000</color>
     <color name="light_grey">#e0e0e0</color>
     <color name="yellow">#FFEB3B</color>
     <color name="transparent">#0000</color>
     <color name="red">#ed1c24</color>
     <color name="grey_back">#d1d3d4</color>
     <color name="grey_icons">#cccccc</color>
+    <color name="darker">#5000</color>
+    <color name="colorOrange">#fd8529</color>
+    <color name="green">#49c463</color>
+    <color name="green_dark">#388E3C</color>
+    <color name="card_back">#f1f5f7</color>
+    <color name="item_name">#616161</color>
+    <color name="item_cost">#616161</color>
+    <color name="item_size">#9EA2A4</color>
+    <color name="black">#a000</color>
 </resources>

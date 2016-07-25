@@ -2,23 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="4"
+    android:weightSum="24"
     android:padding="5dp">
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="7"
         android:hint="Item Name"
         android:layout_marginRight="10dp"
         android:background="@drawable/rectangle_card"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="3"
+        android:layout_weight="17"
         android:hint="Kg"
         android:inputType="number"
-        android:maxLength="2"
+        android:maxLength="3"
         android:background="@drawable/rectangle_card"/>
 
 </LinearLayout>

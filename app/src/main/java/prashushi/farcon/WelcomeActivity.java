@@ -54,24 +54,33 @@ public class WelcomeActivity extends AppCompatActivity{
         });
     }
 
+
     private void checkLogged() {
         sPrefs = getSharedPreferences(getString(R.string.S_PREFS), MODE_PRIVATE);
         editor=sPrefs.edit();
 
-        if(sPrefs.contains("logged")&&sPrefs.getBoolean("logged", false)) {
 
+        if (sPrefs.contains("logged") && sPrefs.getBoolean("logged", false)) {
             System.out.println("Welcome Activity-> id:"+sPrefs.getString("id", "")+", phone:"+sPrefs.getString("phone", ""));
-            startActivity(new Intent(this, HomeActivity.class));
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.putExtra("update", true);
+            startActivity(intent);
             overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
-
             finish();
         }
     }
 
     public  void askOTP(String num) { //change in otpActivity too
         number=num;
-        String url=getString(R.string.local_host)+"phone/"+number;
-        new BackgroundTaskLoad(url, this,new ArrayList<String>(), new ArrayList<String>(), new BackgroundTaskLoad.AsyncResponse() {
+        String url = getString(R.string.local_host) + "phone";
+        ArrayList<String> params = new ArrayList<>();
+        ArrayList<String> values = new ArrayList<>();
+//9808185808    8958050840
+        params.add("phoneno");
+        values.add(num);
+        params.add("token");
+        values.add("qwerty12345");
+        new BackgroundTaskPost(this, url, params, values, new BackgroundTaskPost.AsyncResponse() {
             @Override
             public void processFinish(String output) {
                 if (output.contains("falsexxx")) {

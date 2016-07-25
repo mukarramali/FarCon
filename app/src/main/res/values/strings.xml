@@ -29,7 +29,7 @@
     <string name="deopa">http://192.168.0.19/FarCon/public/</string>
     <string name="local_host">http://api.farcon.in/</string>
     <string name="local_host_web">http://admin.farcon.in</string>
-    <string name="server">http://api.farcon.in/</string>
+    <string name="server">http://test.api.farcon.in/</string>
     <string name="server_web">http://admin.farcon.in</string>
 
     <string name="try_again">Something went wrong, try again!</string>
@@ -39,11 +39,33 @@
     <string name="share_msg">http://www.farcon.in/download Click this link, use my FarCon invite code and get surprise gift on your first order. My Referral Code:</string>
     <string name="share_through">Share the link using?</string>
     <string name="left_empty">Can\'t be left empty!</string>
-    <string name="rewarded">You and your friend have got surprise in your basket!</string>
+    <string name="rewarded">You and your friend will get surprise in your wallet just after your first order. Happy shopping!</string>
     <string name="quote_rec">Your request have been received. We will contact you soon.</string>
     <string name="re_enter">Re Enter</string>
     <string name="re_enter_num">Re-enter your number?</string>
     <string name="login_again">Your session has expired, login again!</string>
     <string name="choose_pack">Choose Pack</string>
     <string name="Rs">\u20B9</string>
+    <string name="title_activity_wallet">WalletActivity</string>
+    <string name="combo_name">Combo</string>
+    <string name="offer_selected">Combo have been added to your wallet!</string>
+    <string name="wallet">Smart Wallet</string>
+    <string name="item">Item</string>
+    <string name="empty_wallet">Your wallet is empty. Click here and start referring FarCon app to your friends to get free vegetables in your wallet. Happy shopping.</string>
+    <string name="update2">New update available, download now?</string>
+    <string name="update3">New update required, download now?</string>
+    <string name="no_offers">Earn more referrals to get offers!</string>
+    <string name="getting_cart">Getting Your Cart</string>
+    <string name="call_wallet">Working Magic</string>
+    <string name="no_connection">Couldn\'t connect, please try again!</string>
+    <string name="wrong_promo">Invalid Promo Code!</string>
+    <string name="action_search">Search</string>
+    <string name="orders">My Orders</string>
+    <string name="title_activity_order">Order</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="button_ok">OK</string>
+    <string name="location_settings">Change location settings and let us make your job easy!</string>
+    <string name="allow">Allow</string>
+    <string name="swipe_down">Swipe down to refresh!</string>
+    <string name="min_checkout">Min Amount :</string>
 </resources>

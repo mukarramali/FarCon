@@ -9,6 +9,8 @@ package prashushi.farcon;
         import android.view.ViewGroup;
         import android.widget.ArrayAdapter;
         import android.widget.TextView;
+
+        import java.text.DecimalFormat;
         import java.util.ArrayList;
 
 //for drawerList
@@ -42,21 +44,28 @@ public class ListViewAdapter extends ArrayAdapter<String> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.listview_package, parent, false);
         tv_price=(TextView)rowView.findViewById(R.id.tv_list_price);
-        tv_price.setText(price.get(position)+context.getResources().getString(R.string.Rs));
+        tv_price.setText(removeZero(price.get(position)) + context.getResources().getString(R.string.Rs));
         Double size_d=Double.valueOf(size.get(position));
         tv_size=(TextView)rowView.findViewById(R.id.tv_list_size);
         tv_size.setText(getSizeTag(size_d));
         return rowView;
     }
 
+    private String removeZero(String package_qty) {
+        double d = Double.valueOf(package_qty);
+        DecimalFormat format = new DecimalFormat("0.#");
+        return format.format(d) + "";
+    }
+
     private String getSizeTag(Double size_d) {
         String tag="Kg";
+
         if(size_d<1.0)
         {
             size_d*=1000;
-            tag="grams";
+            tag = "gms";
         }
-        return size_d+" "+tag;
+        return removeZero(size_d + "") + " " + tag;
     }
 
 }

@@ -4,40 +4,40 @@ package prashushi.farcon;
  * Created by Dell User on 5/4/2016.
  */
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
+import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 
 //1 425 3 425 3
 public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolder> {
 
-    JSONArray combos;
-    String[] combo_id, combo_name, combo_cost, combo_content, combo_thumbnail, percent_off, min_qty;
+    ArrayList<ComboItem> combos;
     SharedPreferences sPrefs;
     SharedPreferences.Editor editor;
     EditText etQuantity;
@@ -46,28 +46,47 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
     int _i;
     private Context mContext;
     private DBHelper mydb ;
+    boolean[] thread;
+    final Typeface roboto;
 
-    public RecyclerAdapterCombo(Context context, JSONArray combos) {
+    private LruCache<String, Bitmap> mMemoryCache;
+
+    public RecyclerAdapterCombo(Context context, ArrayList<ComboItem> combos, boolean[] thread) {
         mContext = context;
         System.out.println("###");
         this.combos=combos;
-        combo_id=new String[combos.length()];
-        combo_name=new String[combos.length()];
-        combo_cost=new String[combos.length()];
-        combo_content=new String[combos.length()];
-        combo_thumbnail=new String[combos.length()];
-        percent_off=new String[combos.length()];
-        min_qty=new String[combos.length()];
+
         sPrefs=context.getSharedPreferences(context.getString(R.string.S_PREFS), context.MODE_PRIVATE);
         editor=sPrefs.edit();
         mydb = new DBHelper(context);
+        this.thread = thread;
+        roboto = Typeface.createFromAsset(mContext.getAssets(), "fonts/roboto_light.ttf");
+        initCache();
+    }
+
+    void initCache() {
+        // Get max available VM memory, exceeding this amount will throw an
+        // OutOfMemory exception. Stored in kilobytes as LruCache takes an
+        // int in its constructor.
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+
+        // Use 1/8th of the available memory for this memory cache.
+        final int cacheSize = maxMemory / 8;
+
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                // The cache size will be measured in kilobytes rather than
+                // number of items.
+                return bitmap.getByteCount() / 1024;
+            }
+        };
     }
 
     private void makeVisible(View v, Boolean b) {
 
-        v.findViewById(R.id.bt_minus).setVisibility(b?View.VISIBLE:View.INVISIBLE);
-        v.findViewById(R.id.et_quantity).setVisibility(b?View.VISIBLE:View.INVISIBLE);
-
+        v.findViewById(R.id.layout_count).setVisibility(b ? View.VISIBLE : View.INVISIBLE);
+        v.findViewById(R.id.bt_add).setVisibility(b ? View.INVISIBLE : View.VISIBLE);
 
     }
 
@@ -78,24 +97,25 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
         EditText et= (EditText) itemView.findViewById(R.id.et_quantity);
         int qty= Integer.parseInt(et.getText().toString());
         qty+=c;
+        combos.get(i).buycount(qty);
         et.setText(qty+"");
 
 
         makeVisible(itemView, qty!=0);
-        printToast(qty);
-        String id=combo_id[i];
+        printToast(c);
+        String id = combos.get(i).id();
         _id=id;
-        String cost=combo_cost[i];
+        String cost = combos.get(i).cost();
         _cost=cost;
 
         if(mydb.ifPresent((toInt(id)*100)+"")){
             quantity=mydb.getQuantity((toInt(id)*100)+"");
             _quantity=quantity;
-            mydb.updateItem((toInt(id)*100)+"", String.format("%.1f",(Double.valueOf(combo_cost[i])*(Double.valueOf(qty)))),qty+"");
+            mydb.updateItem((toInt(id) * 100) + "", String.format("%.0f", (Double.valueOf(combos.get(i).cost()) * (Double.valueOf(qty)))), qty + "");
         }
         else {
             _quantity="0";
-            mydb.insertItem((toInt(combo_id[i])*100)+"", combo_name[i], String.format("%.1f", (Double.valueOf(combo_cost[i]) * (Double.valueOf(qty)))), qty + "");
+            mydb.insertItem((toInt(combos.get(i).id()) * 100) + "", combos.get(i).name(), String.format("%.0f", (Double.valueOf(combos.get(i).cost()) * (Double.valueOf(qty)))), qty + "");
         }
 
         //summary end
@@ -109,14 +129,20 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
 
         params.add("id");
         values.add(user_id);
-        params.add("item_id");
+
+        params.add("item_package_id");
         values.add(id);
+
         params.add("cost");
         values.add(String.format("%.1f",Double.valueOf(cost)*Double.valueOf(qty))+"");
+
         params.add("qty");
-        values.add(qty+"");
-        params.add("flag");
+//        values.add(qty+"");
+        values.add(c + "");
+
+        params.add("item_combo");
         values.add("1");
+
         params.add("access_token");
         values.add(sPrefs.getString("access_token", "0"));
 
@@ -142,8 +168,8 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
     return Integer.parseInt(id);
     }
 
-    private void printToast(int qty) {
-        final Toast toast = Toast.makeText(mContext, qty==0?"Removed":"Added", Toast.LENGTH_SHORT);
+    private void printToast(int c) {
+        final Toast toast = Toast.makeText(mContext, c == 0 || c == -1 ? "Removed" : "Added", Toast.LENGTH_SHORT);
         toast.show();
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -169,89 +195,62 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
     @Override
     public void onBindViewHolder(RecyclerAdapterCombo.ViewHolder holder, int position) {
         int i=position;
-        JSONObject combo;
+        ComboItem combo;
         System.out.println("###1");
-        try {
-            System.out.println(position);
-            combo=combos.getJSONObject(position);
-            combo_id[i]=combo.optInt("combo_id")+"";
-            combo_name[i]=capitalize(combo.optString("name"))+"";
-            combo_cost[i]=combo.optString("cost")+"";
-            combo_thumbnail[i]=combo.optString("thumbnail")+"";
-            percent_off[i]=combo.optInt("percent_off")+"";
-            min_qty[i]=combo.optInt("combo_min_qty")+"";
-            JSONArray array=combo.optJSONArray("items");
-            combo_content[i]=fetchString(array);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        combo = combos.get(position);
 
         System.out.println(position);
 
         System.out.println("###2");
 
         TextView name= (TextView) holder.itemView.findViewById(R.id.tv_name);
-        name.setText(combo_name[position]);
-
-
+        name.setText(combo.name());
+        name.setTypeface(roboto);
 
         TextView combo_costTv= (TextView) holder.itemView.findViewById(R.id.tv_price);
-        combo_costTv.setText("Rs."+combo_cost[position]+"/Item");
+        combo_costTv.setText(mContext.getString(R.string.Rs) + combo.cost() + "/Combo");
+        combo_costTv.setTypeface(roboto);
 
         TextView combo_offerTv = (TextView) holder.itemView.findViewById(R.id.tv_offer);
+        combo_offerTv.setTypeface(roboto);
 
-        int prcnt=Integer.parseInt(percent_off[i]);
+        int prcnt = Integer.parseInt(combo.percent_off());
         if(prcnt>0) {
-            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "fonts/italics.ttf");
-            combo_offerTv.setText("Buy "+min_qty[i]+"Kg, Get "+percent_off[i]+"% Off");
-            combo_offerTv.setTypeface(tf);
+            holder.itemView.findViewById(R.id.layout_offer).setVisibility(View.VISIBLE);
+//            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "fonts/italics.ttf");
+            combo_offerTv.setText("Buy " + combos.get(i).min_qty() + "Kg, Get " + combos.get(i).percent_off() + "% Off");
+            combo_offerTv.setTypeface(roboto);
         }
 
 
         TextView combo_contentTv= (TextView) holder.itemView.findViewById(R.id.tv_content);
-        combo_contentTv.setText(combo_content[position]);
+        combo_contentTv.setText(combos.get(i).content());
+        combo_contentTv.setTypeface(roboto);
+        if (combos.get(i).buycount() == 0)
+            makeVisible(holder.itemView, false);
+        else {
+            makeVisible(holder.itemView, true);
+            TextView etQ = (TextView) holder.itemView.findViewById(R.id.et_quantity);
+            etQ.setText(combos.get(i).buycount() + "");
+        }
 
-        CircularImageView image= (CircularImageView) holder.itemView.findViewById(R.id.im_thumb);
-        setImage(image, combo_thumbnail[position]);
+        ImageView image = (ImageView) holder.itemView.findViewById(R.id.im_thumb);
+        setImage(image, combos.get(i).thumbnail());
     }
 
-    private void setImage(CircularImageView image, String s) {
+
+    private void setImage(ImageView image, String s) {
         String url=mContext.getString(R.string.local_host_web)+s;
 
-        DownloadImage downloadImage=new DownloadImage(image);
+        DownloadImage downloadImage = new DownloadImage(image, thread, mMemoryCache, s, mContext);
         downloadImage.execute(url);
     }
 
-    private String fetchString(JSONArray array) {
-        StringBuilder output=new StringBuilder();
-        try {
 
-            for(int i=0;i<array.length();i++){
-                JSONObject obj=array.getJSONObject(i);
-                String name=obj.getString("item_name");
-                String qty=obj.getString("item_qty");
-                output.append(capitalize(name)+" "+qty+"Kg\n");
-
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return output.toString();
-    }
-
-    private String capitalize(String name) {
-        String st=name;
-        if (name.length()==0)
-            return name;
-        if(name.charAt(0)>'Z'){
-            st=(char)(name.charAt(0)-('a'-'A'))+name.substring(1);
-        }
-        return st;
-    }
 
     @Override
     public int getItemCount() {
-        return combo_id.length;
+        return combos.size();
     }
 
     // Not use static
@@ -262,23 +261,7 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
             System.out.println("###2");
 
             etQuantity=(EditText) itemView.findViewById(R.id.et_quantity);
-/*
-            comboView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // do something
-                    System.out.println("*3");
-                    i=getAdapterPosition();
-                    Intent intent=new Intent(mContext, ComboActivity.class);
-                    intent.putExtra("combo_id", combo_id[i]);
-                    intent.putExtra("combo_name", combo_name[i]);
-                    intent.putExtra("combo_cost", combo_cost[i]);
-                    mContext.startActivity(intent);
 
-                }
-            });
-
-  */
             itemView.findViewById(R.id.bt_minus).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -295,43 +278,127 @@ public class RecyclerAdapterCombo extends Adapter<RecyclerAdapterCombo.ViewHolde
 
                 }
             });
+            itemView.findViewById(R.id.bt_add).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    i = getAdapterPosition();
+                    updateCart(i, itemView, +1);
+//loading xml from anim folder
+                    //You can now apply the animation to a view
+             /*       ImageView im_thumb= (ImageView) itemView.findViewById(R.id.im_thumb);
+                   // im_thumb.startAnimation(localAnimation);
+
+                    setAllParentsClip(im_thumb, false);
+
+                    View vv= (View) itemView.getParent().getParent();
+                    int[] loc=new int[2];
+                    vv.getLocationOnScreen(loc);
+                    int deltaX = (loc[0]);
+                    int deltaY = (loc[1]);
+
+//                    int deltaX = (vv.getWidth());
+//                    int deltaY = (vv.getHeight());
+
+                    TranslateAnimation anim = new TranslateAnimation(
+                            TranslateAnimation.ABSOLUTE, 0.0f,
+                            TranslateAnimation.ABSOLUTE, deltaX,
+                            TranslateAnimation.ABSOLUTE, 0.0f,
+                            TranslateAnimation.ABSOLUTE, deltaY
+                    );
+                    anim.setFillAfter(false);
+                    anim.setDuration(1000);
+
+                    ScaleAnimation anim2=new ScaleAnimation(
+                            1.0f,0.1f,
+                            1.0f,0.1f);
+                    anim2.setFillAfter(false);
+                    anim2.setDuration(1000);
+
+                    Animation together = AnimationUtils.loadAnimation(mContext, R.anim.together);
+
+
+                    AnimationSet set=new AnimationSet(mContext, null);
+                    //set.addAnimation(anim);
+                    set.addAnimation(together);
+                    set.setInterpolator(new DecelerateInterpolator());
+
+                    im_thumb.setAnimation(together);
+
+*/
+                }
+            });
+
         }
     }
 
-    class DownloadImage extends AsyncTask<String, Void, Bitmap> {
-        ImageView im;
+    public ComboItem removeItem(int position) {
+        final ComboItem item = combos.remove(position);
+        notifyItemRemoved(position);
+//        notifyDataSetChanged();
+        return item;
+    }
 
-        public DownloadImage(CircularImageView pstr) {
-            im = pstr;
-        }
+    public void addItem(int position, ComboItem model) {
+        combos.add(position, model);
+//        notifyItemInserted(position);
+        notifyDataSetChanged();
+    }
 
+    public void moveItem(int fromPosition, int toPosition) {
+        final ComboItem item = combos.remove(fromPosition);
+        combos.add(toPosition, item);
+        notifyItemMoved(fromPosition, toPosition);
+//        notifyDataSetChanged();
+    }
 
-        @Override
-        protected void onPreExecute() {
-           im.setImageResource(R.drawable.veg2);
-        }
+    public void animateTo(ArrayList<ComboItem> newCombos) {
+        System.out.println("animate to:" + newCombos.size());
+        applyAndAnimateRemovals(newCombos);
+        applyAndAnimateAdditions(newCombos);
+        applyAndAnimateMovedItems(newCombos);
+        System.out.println("Remaining size:" + combos.size());
+        notifyDataSetChanged();
+    }
 
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            String url = params[0];
-            System.out.println(url);
-            Bitmap bitmap = null;
-            try {
-                InputStream fin = new URL(url).openStream();
-                bitmap = BitmapFactory.decodeStream(fin);
-            } catch (Exception e) {
-                e.printStackTrace();
+    private void applyAndAnimateRemovals(ArrayList<ComboItem> newCombos) {
+        System.out.println("animateRemovals to:" + newCombos.size());
+        for (int i = combos.size() - 1; i >= 0; i--) {
+            final ComboItem model = combos.get(i);
+            if (!newCombos.contains(model)) {
+                removeItem(i);
             }
-            return bitmap;
-        }
-
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-
-            if(bitmap!=null)
-            im.setImageBitmap(bitmap);
-
         }
     }
+
+    private void applyAndAnimateAdditions(ArrayList<ComboItem> newCombos) {
+        System.out.println("animateAdditions to:" + newCombos.size());
+        for (int i = 0, count = newCombos.size(); i < count; i++) {
+            final ComboItem model = newCombos.get(i);
+            if (!combos.contains(model)) {
+                addItem(i, model);
+            }
+        }
+    }
+
+    private void applyAndAnimateMovedItems(ArrayList<ComboItem> newCombos) {
+        System.out.println("animateMove to:" + newCombos.size());
+        for (int toPosition = newCombos.size() - 1; toPosition >= 0; toPosition--) {
+            final ComboItem item = newCombos.get(toPosition);
+            final int fromPosition = combos.indexOf(item);
+            if (fromPosition >= 0 && fromPosition != toPosition) {
+                moveItem(fromPosition, toPosition);
+            }
+        }
+    }
+
+
+    public static void setAllParentsClip(View v, boolean enabled) {
+        while (v.getParent() != null && v.getParent() instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) v.getParent();
+            viewGroup.setClipChildren(enabled);
+            viewGroup.setClipToPadding(enabled);
+            v = viewGroup;
+        }
+    }
+
 }

@@ -1,14 +1,18 @@
 package prashushi.farcon;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -111,9 +115,11 @@ public class AddressActivity extends AppCompatActivity
                     Toast.makeText(AddressActivity.this, "Sorry, Couldn't find your location!", Toast.LENGTH_LONG).show();
                 }
             }).execute();
-
         } else {
-            Toast.makeText(this, "Couldn't get the location. Make sure location is enabled on the device!", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Couldn't get the location. Make sure location is enabled on the device!", Toast.LENGTH_LONG).show();
+            if (!canGetLocation()) {
+                showSettingsAlert();
+            }
         }
     }
 
@@ -129,6 +135,10 @@ public class AddressActivity extends AppCompatActivity
                 }
                 else
                 {
+                    if (!canGetLocation()) {
+                        showSettingsAlert();
+                    }
+
                     Toast.makeText(this, "Allow location permission to this app from Settings>Apps!", Toast.LENGTH_LONG).show();
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -141,6 +151,57 @@ public class AddressActivity extends AppCompatActivity
         }
     }
 
+    public boolean canGetLocation() {
+        boolean result = true;
+        LocationManager lm = null;
+        boolean gps_enabled = false;
+        boolean network_enabled = false;
+        if (lm == null)
+            lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        // exceptions will be thrown if provider is not permitted.
+        try {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        } catch (Exception ex) {
+        }
+        try {
+            network_enabled = lm
+                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        } catch (Exception ex) {
+        }
+        if (gps_enabled == false || network_enabled == false) {
+            result = false;
+        } else {
+            result = true;
+        }
+
+        return result;
+    }
+
+    public void showSettingsAlert() {
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+
+        // Setting Dialog Title
+        alertDialog.setTitle("Location Settings");
+
+        // Setting Dialog Message
+        alertDialog.setMessage(getString(R.string.location_settings));
+
+        // On pressing Settings button
+        alertDialog.setPositiveButton(
+                getResources().getString(R.string.allow),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(
+                                Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(intent);
+                    }
+                });
+
+
+        alertDialog.show();
+    }
     /**
      * Creating google api client object
      * */
@@ -346,7 +407,7 @@ public class AddressActivity extends AppCompatActivity
 
                 String url=getString(R.string.local_host)+"order";
 
-                new BackgroundTaskPost(url, params, values, new BackgroundTaskPost.AsyncResponse() {
+                new BackgroundTaskPost(this, url, params, values, new BackgroundTaskPost.AsyncResponse() {
                     @Override
                     public void processFinish(String output) {
                         if(output.contains("truexxx")) {
@@ -364,12 +425,13 @@ public class AddressActivity extends AppCompatActivity
                                 code=getIntent().getExtras().getString("code");
                             values.add(code);
 
-                            new BackgroundTaskPost(url2, params, values, new BackgroundTaskPost.AsyncResponse() {
+                            new BackgroundTaskPost(AddressActivity.this, url2, params, values, new BackgroundTaskPost.AsyncResponse() {
                                 @Override
                                 public void processFinish(String output) {
                                     if(!output.contains("falsexxx")) {
                                         Intent intent=new Intent(AddressActivity.this, ConfirmActivity.class);
                                         intent.putExtra("order_id", output);
+                                        intent.putExtra("cost", getIntent().getExtras().getString("cost"));
                                         mydb.deleteDB();
                                         startActivity(intent);
                                         finish();

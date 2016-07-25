@@ -40,9 +40,9 @@ public class TempCartActivity extends Activity implements View.OnClickListener {
             discount_cost=bundle.getDouble("discount_cost")+"";
             after_promo_cost=bundle.getDouble("after_promo_cost")+"";
             promo_code=bundle.getString("code");
-            tv_actual.setText("Rs."+actual_cost);
-            tv_discount.setText("Rs."+discount_cost);
-            tv_promo.setText("Rs."+after_promo_cost);
+            tv_actual.setText(getString(R.string.Rs) + actual_cost);
+            tv_discount.setText(getString(R.string.Rs) + discount_cost);
+            tv_promo.setText(getString(R.string.Rs) + after_promo_cost);
 
         }catch(Exception e){
             e.printStackTrace();
@@ -66,6 +66,7 @@ public class TempCartActivity extends Activity implements View.OnClickListener {
             case R.id.sumary_container:
                 Intent intent=new Intent(TempCartActivity.this, AddressActivity.class);
                 intent.putExtra("code", promo_code);
+                intent.putExtra("cost", tv_promo.getText().toString());
                 startActivity(intent);
                 break;
         }

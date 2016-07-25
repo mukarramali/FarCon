@@ -105,7 +105,7 @@ public class QuoteFormActivity extends Activity implements View.OnClickListener 
                 params.add("access_token");
                 values.add(sPrefs.getString("access_token", "0"));
 
-                new BackgroundTaskPost(url, params, values, new BackgroundTaskPost.AsyncResponse() {
+                new BackgroundTaskPost(this, url, params, values, new BackgroundTaskPost.AsyncResponse() {
                     @Override
                     public void processFinish(String output) {
                         if(output.contains("truexxx"))

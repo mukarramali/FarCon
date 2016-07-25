@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,34 +17,51 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.victor.loading.newton.NewtonCradleLoading;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.concurrent.Exchanger;
 
 /**
  * Created by Dell User on 6/20/2016.
  */
-public class CartActivity extends AppCompatActivity implements View.OnClickListener {
+public class CartActivity extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     LinearLayoutManager mLayoutManager;
     RecyclerView recyclerview_cart;
     TextView  actualsummaryTv; //for actual cost
-    TextView finalsummaryTv2 ;
+    TextView finalsummaryTv2;
     TextView discountTv;
     TextView tvBuy;
     DBHelper mydb;
     SharedPreferences sPrefs;
     String cartString;
-    int count=0;
+    Integer count = 0;
+    NewtonCradleLoading newtonCradleLoading;
     RelativeLayout summary_container, promo_container;
     Boolean promo_flag=false;
     EditText etPromo;
+    String costToPrint;
+    boolean[] thread;
+    Double min_amount_check = 0.0;
+    double[] cost_new;
+    SwipeRefreshLayout swipe_refresh;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
         mydb=new DBHelper(this);
+        costToPrint = "";
+        newtonCradleLoading = (NewtonCradleLoading) findViewById(R.id.newton_cradle_loading);
+        newtonCradleLoading.setVisibility(View.VISIBLE);
+        newtonCradleLoading.setLoadingColor(getResources().getColor(R.color.colorPrimary));
+
+        thread = new boolean[]{true};
+        cost_new = new double[]{0};
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getString(R.string.action_cart));
@@ -66,20 +85,43 @@ public class CartActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
 
-                if(count>0){
+                if (count > 0 && !finalsummaryTv2.getText().toString().contains("Empty") && cost_new[0] >= min_amount_check) {
+                    System.out.println(cost_new[0] + ">=" + min_amount_check);
+                    System.out.println("count:" + count);
                     Intent intent=new Intent(CartActivity.this, AddressActivity.class);
                     intent.putExtra("code", "NO_PROMO");
-                startActivity(intent);}
+                    intent.putExtra("cost", finalsummaryTv2.getText().toString());
+                    startActivity(intent);
+                } else if (cost_new[0] < min_amount_check) {
+                    Toast.makeText(CartActivity.this, getString(R.string.min_checkout) + min_amount_check, Toast.LENGTH_SHORT).show();
+                    System.out.println(cost_new[0] + "<" + min_amount_check);
+
+                }
             }
         });
 
         JSONArray jsonArray=mydb.getAllItems();
         cartString=jsonArray.toString();
-        System.out.println("Cart from DB:"+cartString);
-//        final RecyclerAdapterCart adapter=new RecyclerAdapterCart(this, jsonArray, summaryTv, summaryTv2, summary_container);
-  //      recyclerview_cart.setAdapter(adapter);
 
+/*        swipe_refresh= (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        swipe_refresh.setOnRefreshListener(this);
+        swipe_refresh.post(new Runnable() {
+                               @Override
+                               public void run() {
+                                   swipe_refresh.setRefreshing(true);
+                               }
+                           }
+        );
+*/
+        callServer();
+
+
+    }
+
+    private void callServer() {
         sPrefs=getSharedPreferences(getString(R.string.S_PREFS), MODE_PRIVATE);
+        newtonCradleLoading.start();
+
         String id=sPrefs.getString("id","0");
         String url=getString(R.string.local_host)+"cart";
         ArrayList<String> params=new ArrayList<>();
@@ -95,6 +137,9 @@ public class CartActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void processFinish(String output) {
 
+//                swipe_refresh.setRefreshing(false);
+                newtonCradleLoading.stop();
+                newtonCradleLoading.setVisibility(View.INVISIBLE);
                 System.out.println(output);
                 if(output.contains("error")||output.contains("falsexxx"))
                 {
@@ -112,59 +157,75 @@ public class CartActivity extends AppCompatActivity implements View.OnClickListe
                         jsonArray=jsonObject.optJSONArray("details");
                         jsonObject=temp.getJSONObject(1);
                         temp=jsonObject.optJSONArray("discount");
-                        jsonDiscount=temp.getJSONObject(0);
-                       //   System.out.println(jsonDiscount.toString());
-                       // jsonDiscount=new JSONObject("{\"min_amt\":\"500\",\"percent_off\":\"10\"}");
-                        double min_amount=  jsonDiscount.optInt("min_amt");
-                        int percent_off=jsonDiscount.optInt("percent_off");
-                        if(jsonDiscount.has("min_amt"))
-                            System.out.println("min_amt present");
-                        else
-                        percent_off=0;
-                        System.out.println("min_amt:"+min_amount+", percent_off:"+percent_off);
+                        int percent_off = 0;
+                        double min_amount = 0;
+
+                        if (temp != null && temp.length() > 0) {
+//                            if(temp.get(0)==null)
+                            //                              continue;
+                            try {
+                                jsonDiscount = temp.getJSONObject(0);
+                                // System.out.println(jsonDiscount.toString());
+                                // jsonDiscount=new JSONObject("{\"min_amt\":\"500\",\"percent_off\":\"10\"}");
+                                min_amount = jsonDiscount.optInt("min_amt");
+                                percent_off = jsonDiscount.optInt("percent_off");
+                                if (jsonDiscount.has("min_amt"))
+                                    System.out.println("min_amt present");
+                                else
+                                    percent_off = 0;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                        min_amount_check = Double.valueOf(jsonObject.getString("min_amt_check"));
 
                         cartString=jsonArray.toString();
                         System.out.println("Cart from Server:"+cartString);
-                        final RecyclerAdapterCart adapter=new RecyclerAdapterCart(CartActivity.this,min_amount, percent_off, jsonArray, actualsummaryTv, finalsummaryTv2, discountTv,summary_container);
+
+                        final RecyclerAdapterCart adapter = new RecyclerAdapterCart(CartActivity.this, min_amount, percent_off, jsonArray, actualsummaryTv, finalsummaryTv2, discountTv, summary_container, thread, count, cost_new);
                         recyclerview_cart.setAdapter(adapter);
                         JSONObject obj;
-                        double cost=0, costnew=0;
+                        double cost = 0;
                         String costj, qtyj;
                         int j;
                         for(j=0;j<jsonArray.length();j++){
                             obj=jsonArray.getJSONObject(j);
                             costj=obj.optString("item_cost");
+                            int qty = obj.optInt("item_qty");
                             if(obj.optInt("percent_off")>0){
                                 int tmp;
                                 if(obj.has("item_min_qty"))
                                     tmp = obj.optInt("item_min_qty");
                                 else
                                     tmp = obj.optInt("combo_min_qty");
-                                if(obj.optInt("item_qty")>=tmp)
+                                if (qty >= tmp)
                                     costj=""+((100-obj.optInt("percent_off"))*Double.valueOf(costj)/100);
 
                             }
 //                            qtyj=obj.optString("item_qty");
+                            //change cost per item and total
                             cost+=(Double.valueOf(costj));
                         }
                         count=j;
                         String st="";
                         String st2="";
-                        if((int)cost>=min_amount&&percent_off>0)
-                        {costnew=((100-percent_off)*cost)/100;
-                         String st3=percent_off+"% Discount";
-                        discountTv.setText(st3);
+                        if((int)cost>=min_amount&&percent_off>0) {
+                            cost_new[0] = ((100 - percent_off) * cost) / 100;
+                            String st3 = percent_off + "% Discount";
+                            discountTv.setText(st3);
 //                            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "fonts/italicslined.ttf");
 
                         }
                         else
-                        costnew=cost;
+                            cost_new[0] = cost;
                         System.out.println("min_amount:"+min_amount+", cost:"+cost);
 
                         if(j>0)
                         {
-                            st="Rs."+String.format("%.1f",costnew);
-                            st2="SubTotal: Rs."+String.format("%.1f",cost);
+                            st = getString(R.string.Rs) + String.format("%.1f", cost_new[0]);
+                            st2 = getString(R.string.Rs) + String.format("%.1f", cost);
                         }
                         else{
                             st="Cart Empty";
@@ -182,7 +243,20 @@ public class CartActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         }).execute();
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.e("00", "cart activity exit");
+        thread[0] = false;
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        thread[0] = true;
     }
 
     @Override
@@ -221,9 +295,11 @@ public class CartActivity extends AppCompatActivity implements View.OnClickListe
                 new BackgroundTaskPost(url, params, values, new BackgroundTaskPost.AsyncResponse() {
                     @Override
                     public void processFinish(String output) {
-                        if(output.contains("falsexxx")||output.contains("error")) {
+                        if (output.contains("error")) {
                             new Utilities().checkIfLogged(output, CartActivity.this);
                             return;
+                        } else if (output.contains("falsexxx")) {
+                            Toast.makeText(CartActivity.this, CartActivity.this.getString(R.string.wrong_promo), Toast.LENGTH_LONG).show();
                         }
                         else {
                             JSONArray jsonArray = null;
@@ -265,6 +341,12 @@ public class CartActivity extends AppCompatActivity implements View.OnClickListe
 
         }
 
+    }
+
+    @Override
+    public void onRefresh() {
+        //  swipe_refresh.setRefreshing(true);
+        callServer();
     }
 
 //    void  update(String st){

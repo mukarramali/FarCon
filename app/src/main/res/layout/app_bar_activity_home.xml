@@ -4,16 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
-    android:clipToPadding="false"
     android:fitsSystemWindows="true"
-    tools:context=".HomeActivity">
+    tools:context=".HomeActivity"
+    tools:showIn="@layout/activity_home">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clipChildren="false"
-        android:clipToPadding="false"
         android:theme="@style/MyMaterialTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
@@ -21,21 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            android:clipChildren="false"
-            android:clipToPadding="false"
             app:popupTheme="@style/MyMaterialTheme.PopupOverlay" >
-            <android.support.v7.widget.SearchView
-                android:id="@+id/search"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="20dp"
-                android:hint="Search here"
-                android:paddingBottom="20dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:textSize="16sp"
-                android:visibility="invisible" />
         </android.support.v7.widget.Toolbar>
 
 
@@ -44,11 +27,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="@color/white"
-            android:clipChildren="false"
-            android:clipToPadding="false"
             app:tabGravity="center"
             app:tabMode="fixed"
+            app:tabIndicatorColor="@color/white"
             />
     </android.support.design.widget.AppBarLayout>
 
@@ -60,6 +41,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/price" />
+        android:src="@drawable/basket_grey" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -1,17 +1,18 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="MyMaterialTheme" parent="MyMaterialTheme.Base">
-    </style>
-
+    <style name="MyMaterialTheme" parent="MyMaterialTheme.Base"></style>
 
 
     <style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:alertDialogStyle">@style/CustomAlertDialogStyle</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:actionBarPopupTheme" tools:targetApi="lollipop">@style/MyMaterialTheme.OverflowMenu</item>
+        <item name="android:actionBarPopupTheme" tools:targetApi="lollipop">
+            @style/MyMaterialTheme.OverflowMenu
+        </item>
     </style>
 
     <style name="MyMaterialTheme.ActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -47,39 +48,52 @@
         <item name="android:background">@android:color/transparent</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
+
+    <style name="CustomAlertDialogStyle">
+        <item name="android:bottomBright">@color/transparent</item>
+        <item name="android:bottomDark">@color/transparent</item>
+        <item name="android:bottomMedium">@color/transparent</item>
+        <item name="android:centerBright">@color/transparent</item>
+        <item name="android:centerDark">@color/transparent</item>
+        <item name="android:centerMedium">@color/transparent</item>
+        <item name="android:fullBright">@color/transparent</item>
+        <item name="android:fullDark">@color/transparent</item>
+        <item name="android:topBright">@color/transparent</item>
+        <item name="android:topDark">@color/transparent</item>
+    </style>
+
     <!-- CircularImageView Custom Styling -->
     <declare-styleable name="CircularImageView">
 
         <!-- Whether or not to draw a circular border around the image. -->
-        <attr name="civ_border" format="boolean"/>
+        <attr name="civ_border" format="boolean" />
         <!-- The color of the border draw around the image. (if enabled) -->
-        <attr name="civ_borderColor" format="color"/>
+        <attr name="civ_borderColor" format="color" />
         <!-- Makes the border this pixels wide. (if enabled) -->
-        <attr name="civ_borderWidth" format="dimension"/>
+        <attr name="civ_borderWidth" format="dimension" />
         <!-- Whether or not to draw a selector on this view upon touch events. -->
-        <attr name="civ_selector" format="boolean"/>
+        <attr name="civ_selector" format="boolean" />
         <!-- The color of the selector draw on top of the image upon touch events. (if enabled) -->
-        <attr name="civ_selectorColor" format="color"/>
+        <attr name="civ_selectorColor" format="color" />
         <!-- The color of the selector stroke drawn around the image upon touch events. Be sure to provide some opacity. (if enabled) -->
-        <attr name="civ_selectorStrokeColor" format="color"/>
+        <attr name="civ_selectorStrokeColor" format="color" />
         <!-- The selector stroke drawn around the image upon touch events this pixels wide. (if enabled) -->
-        <attr name="civ_selectorStrokeWidth" format="dimension"/>
+        <attr name="civ_selectorStrokeWidth" format="dimension" />
         <!-- Whether or not to draw a shadow around your circular image. -->
-        <attr name="civ_shadow" format="boolean"/>
+        <attr name="civ_shadow" format="boolean" />
         <!-- The radius for the shadow to extend to. (if enabled) -->
-        <attr name="civ_shadowRadius" format="float"/>
+        <attr name="civ_shadowRadius" format="float" />
         <!-- Horizontal shadow offset. (if enabled) -->
-        <attr name="civ_shadowDx" format="float"/>
+        <attr name="civ_shadowDx" format="float" />
         <!-- Vertical shadow offset. (if enabled) -->
-        <attr name="civ_shadowDy" format="float"/>
+        <attr name="civ_shadowDy" format="float" />
         <!-- The color of the shadow drawn around your circular image. (if enabled) -->
-        <attr name="civ_shadowColor" format="color"/>
+        <attr name="civ_shadowColor" format="color" />
     </declare-styleable>
 
 
-
     <declare-styleable name="CircularImageViewStyle">
-        <attr name="circularImageViewDefault" format="reference"/>
+        <attr name="circularImageViewDefault" format="reference" />
     </declare-styleable>
 
 </resources>

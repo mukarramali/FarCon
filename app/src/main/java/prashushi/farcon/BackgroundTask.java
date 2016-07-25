@@ -3,6 +3,7 @@ package prashushi.farcon;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import org.apache.http.client.ClientProtocolException;
 
@@ -50,6 +51,8 @@ class BackgroundTask extends AsyncTask<Void, Void, Boolean> {
             System.out.println(url);
             URL Url = new URL(url);
             URLConnection conn = Url.openConnection();
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line ;// Read Server Response
             while ((line = reader.readLine()) != null) {
@@ -61,6 +64,12 @@ class BackgroundTask extends AsyncTask<Void, Void, Boolean> {
             result="falsexxx";
         }
         return false;
+    }
+
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        result = "falsexxx";
     }
 
     @Override
